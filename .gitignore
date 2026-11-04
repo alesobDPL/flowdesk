@@ -1,0 +1,13 @@
+# Configuración local de Obsidian y artefactos de Playwright
+/docs/.obsidian/
+.playwright/
+
+# Dependencias
+node_modules/
+
+# Variables de entorno: las plantillas se pueden versionar sin secretos
+.env
+.env.*
+!.env.example
+# Playwright CLI output (may contain credentials)
+.playwright-cli/
