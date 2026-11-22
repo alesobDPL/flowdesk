@@ -12,3 +12,13 @@ FlowDesk centraliza las solicitudes internas de una empresa con un flujo trazabl
 **Cómo se trabaja:** primero se diseña, luego se planifica y por último se implementa con pruebas. Cada etapa necesita una aprobación explícita. Las reglas para los agentes de IA que colaboran en el proyecto están en [AGENTS.md](../AGENTS.md) y [CLAUDE.md](../CLAUDE.md).
 
 Las convenciones de cada carpeta están en [specs](superpowers/specs/README.md) y [plans](superpowers/plans/README.md).
+
+## Pruebas
+
+Desde la raíz, `pnpm test` ejecuta los proyectos `shared`, `api-unit` y `api-integration`. Solo `api-integration` necesita Docker para iniciar PostgreSQL mediante Testcontainers. `pnpm --filter @flowdesk/api test` ejecuta ambos proyectos de la API.
+
+Para ejecutar únicamente las pruebas unitarias del dominio, sin Docker:
+
+```sh
+pnpm exec vitest run --config vitest.workspace.ts --project api-unit
+```

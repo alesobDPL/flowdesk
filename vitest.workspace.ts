@@ -12,8 +12,14 @@ export default defineConfig({
       },
       {
         test: {
-          name: 'api',
-          include: ['apps/api/test/**/*.test.ts'],
+          name: 'api-unit',
+          include: ['apps/api/test/unit/**/*.test.ts'],
+        },
+      },
+      {
+        test: {
+          name: 'api-integration',
+          include: ['apps/api/test/integration/**/*.test.ts'],
           globalSetup: ['apps/api/test/helpers/global-setup.ts'],
           fileParallelism: false,
         },
