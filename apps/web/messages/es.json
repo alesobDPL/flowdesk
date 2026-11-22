@@ -150,6 +150,76 @@
     "submitting": "Enviando…",
     "success": "Solicitud {code} creada."
   },
+  "actions": {
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "assign": "Asignarme",
+    "release": "Liberar",
+    "complete": "Completar",
+    "saving": "Guardando…",
+    "none": "No hay acciones disponibles en el estado actual.",
+    "changed": "La solicitud ha cambiado. Se ha actualizado el detalle."
+  },
+  "actionDialog": {
+    "labels": {
+      "reject": "Motivo de rechazo",
+      "release": "Motivo de liberación",
+      "approve": "Comentario (opcional)",
+      "complete": "Nota de finalización (opcional)"
+    },
+    "descriptions": {
+      "reject": "Indica por qué rechazas esta solicitud. El motivo quedará en su historial.",
+      "release": "Explica por qué liberas la solicitud. Volverá a estar disponible en la cola de TI.",
+      "approve": "Confirma la aprobación. La solicitud pasará a la cola de TI.",
+      "complete": "Confirma que el acceso se concedió manualmente. Esta acción registra la finalización."
+    },
+    "requiredHint": "Entre 10 y 500 caracteres, sin contar espacios iniciales o finales.",
+    "optionalHint": "Hasta 500 caracteres. No incluyas contraseñas ni credenciales."
+  },
+  "events": {
+    "created": "Solicitud creada",
+    "approved": "Solicitud aprobada",
+    "rejected": "Solicitud rechazada",
+    "assigned": "Solicitud asignada",
+    "released": "Solicitud liberada",
+    "completed": "Solicitud completada"
+  },
+  "timeline": {
+    "title": "Historial",
+    "empty": "Todavía no hay eventos registrados."
+  },
+  "requestDetail": {
+    "title": "{code} · {software}",
+    "data": "Datos de la solicitud",
+    "people": "Responsables",
+    "actions": "Acciones",
+    "requester": "Solicitante",
+    "approver": "Aprobador",
+    "assignee": "Técnico asignado",
+    "completedBy": "Completada por",
+    "notAssigned": "Sin asignar",
+    "notCompleted": "Aún no completada",
+    "notSpecified": "No especificado",
+    "createdAt": "Fecha de creación",
+    "decidedAt": "Fecha de decisión",
+    "completedAt": "Fecha de finalización",
+    "decisionComment": "Comentario de la decisión",
+    "completionNote": "Nota de finalización"
+  },
+  "inbox": {
+    "pending": "Pendientes",
+    "decided": "Decididas",
+    "emptyPending": "No hay solicitudes pendientes de tu decisión.",
+    "emptyDecided": "Aún no has decidido ninguna solicitud."
+  },
+  "queue": {
+    "available": "Disponibles",
+    "assigned": "Asignadas a mí",
+    "completed": "Completadas",
+    "emptyAvailable": "No hay solicitudes disponibles. Aprueba una desde la identidad de aprobador para verla aquí.",
+    "emptyAssigned": "No tienes solicitudes asignadas. Toma una de la pestaña Disponibles.",
+    "emptyCompleted": "Aún no has completado solicitudes."
+  },
   "validation": {
     "too_short": "Añade más detalle.",
     "too_long": "Este texto es demasiado largo.",

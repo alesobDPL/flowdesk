@@ -18,6 +18,7 @@ import type {
   Page,
   RequestSummary,
   RequestDetail,
+  RequestAction,
   listQuerySchema,
 } from '@flowdesk/shared';
 import { apiFetch, type ApiClientError } from './api-client';
@@ -144,6 +145,50 @@ export function useCreateRequest(): UseMutationResult<
         client.invalidateQueries({ queryKey: ['requests'] }),
         client.invalidateQueries({ queryKey: ['tour'] }),
       ]);
+    },
+    retry: false,
+  });
+}
+
+export function useRequest(
+  id: string,
+): UseQueryResult<RequestDetail, ApiClientError> {
+  return useQuery({
+    queryKey: ['requests', 'detail', id],
+    queryFn: () =>
+      apiFetch<RequestDetail>(`/requests/${encodeURIComponent(id)}`),
+    retry: false,
+  });
+}
+
+export function useRequestAction(
+  id: string,
+): UseMutationResult<
+  RequestDetail,
+  ApiClientError,
+  { action: RequestAction; body: Record<string, string | null> }
+> {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({ action, body }) =>
+      apiFetch<RequestDetail>(`/requests/${encodeURIComponent(id)}/${action}`, {
+        method: 'POST',
+        body,
+      }),
+    onSuccess: async (request) => {
+      await client.cancelQueries({ queryKey: ['requests', 'detail', id] });
+      client.setQueryData(['requests', 'detail', id], request);
+      await Promise.all([
+        client.invalidateQueries({ queryKey: ['requests'] }),
+        client.invalidateQueries({ queryKey: ['tour'] }),
+      ]);
+    },
+    onError: async (error) => {
+      if (error.status === 409)
+        await client.invalidateQueries({
+          queryKey: ['requests', 'detail', id],
+          refetchType: 'all',
+        });
     },
     retry: false,
   });

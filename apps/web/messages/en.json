@@ -150,6 +150,76 @@
     "submitting": "Submitting…",
     "success": "Request {code} created."
   },
+  "actions": {
+    "approve": "Approve",
+    "reject": "Reject",
+    "assign": "Assign to me",
+    "release": "Release",
+    "complete": "Complete",
+    "saving": "Saving…",
+    "none": "No actions are available in the current state.",
+    "changed": "This request has changed. Its details have been refreshed."
+  },
+  "actionDialog": {
+    "labels": {
+      "reject": "Rejection reason",
+      "release": "Release reason",
+      "approve": "Comment (optional)",
+      "complete": "Completion note (optional)"
+    },
+    "descriptions": {
+      "reject": "Explain why you are rejecting this request. The reason will appear in its history.",
+      "release": "Explain why you are releasing the request. It will return to the available IT queue.",
+      "approve": "Confirm approval. The request will move to the IT queue.",
+      "complete": "Confirm that access was granted manually. This action records completion."
+    },
+    "requiredHint": "Between 10 and 500 characters, excluding leading and trailing spaces.",
+    "optionalHint": "Up to 500 characters. Do not include passwords or credentials."
+  },
+  "events": {
+    "created": "Request created",
+    "approved": "Request approved",
+    "rejected": "Request rejected",
+    "assigned": "Request assigned",
+    "released": "Request released",
+    "completed": "Request completed"
+  },
+  "timeline": {
+    "title": "History",
+    "empty": "No events have been recorded yet."
+  },
+  "requestDetail": {
+    "title": "{code} · {software}",
+    "data": "Request information",
+    "people": "People",
+    "actions": "Actions",
+    "requester": "Requester",
+    "approver": "Approver",
+    "assignee": "Assigned technician",
+    "completedBy": "Completed by",
+    "notAssigned": "Unassigned",
+    "notCompleted": "Not completed yet",
+    "notSpecified": "Not specified",
+    "createdAt": "Created",
+    "decidedAt": "Decision date",
+    "completedAt": "Completion date",
+    "decisionComment": "Decision comment",
+    "completionNote": "Completion note"
+  },
+  "inbox": {
+    "pending": "Pending",
+    "decided": "Decided",
+    "emptyPending": "No requests are waiting for your decision.",
+    "emptyDecided": "You have not decided any requests yet."
+  },
+  "queue": {
+    "available": "Available",
+    "assigned": "Assigned to me",
+    "completed": "Completed",
+    "emptyAvailable": "No requests are available. Approve one using the approver identity to see it here.",
+    "emptyAssigned": "You have no assigned requests. Take one from the Available tab.",
+    "emptyCompleted": "You have not completed any requests yet."
+  },
   "validation": {
     "too_short": "Please add more detail.",
     "too_long": "This text is too long.",
