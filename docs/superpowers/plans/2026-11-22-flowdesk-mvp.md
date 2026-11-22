@@ -19,7 +19,7 @@ Fecha: 2026-11-22. Estado: **Aprobado por el propietario el 2026-11-22.** Autori
 - **Versiones.** Comprobadas en npm, nodejs.org y Docker Hub el 2026-11-22. Se fija la versión mayor y el lockfile versiona la exacta.
   - **TypeScript 6.0, no 7.0:** typescript-eslint 8 exige `typescript <6.1`.
   - **PostgreSQL 18, no 19.0:** se elige la versión mayor con más rodaje frente a una `.0` recién publicada.
-- **Requisitos de plataforma.** `.nvmrc` = `26`. En `package.json`, `engines.node` = `>=26` y `packageManager` = `pnpm@12`. pnpm se activa con `corepack enable`.
+- **Requisitos de plataforma.** `.nvmrc` = `26`. En `package.json`, `engines.node` = `>=26` y `packageManager` = `pnpm@12.21.0` (Corepack exige una versión completa). Node 26 ya no incluye Corepack: se instala con `npm install -g corepack@latest` y pnpm se activa con `corepack enable`.
 - **TypeScript.** `strict: true`, `noUncheckedIndexedAccess: true` y ESM en todos los paquetes.
 - **Nombres.** Identificadores de código y columnas en inglés. Documentación interna en español.
 - **Valores fijos del diseño.** Sus límites (9.2) se leen de variables de entorno con estos valores por defecto:
@@ -156,7 +156,7 @@ Rutas internas en inglés (`/app/requests`). next-intl `pathnames` las localiza:
   ```
 - Produces, scripts raíz: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm format:check`.
 
-- [ ] **Step 1: Activar pnpm y crear el workspace.** Ejecutar `corepack enable`. Crear los archivos raíz con las restricciones globales. Workspaces: `apps/*` y `packages/*`. ESLint con typescript-eslint en modo `recommendedTypeChecked` y Prettier. Instalar las dependencias de desarrollo.
+- [ ] **Step 1: Activar pnpm y crear el workspace.** Instalar Corepack y ejecutar `corepack enable`. Crear los archivos raíz con las restricciones globales. Workspaces: `apps/*` y `packages/*`. ESLint con typescript-eslint en modo `recommendedTypeChecked` y Prettier. Instalar las dependencias de desarrollo.
 - [ ] **Step 2: Escribir la prueba que falla** en `packages/shared/test/domain.test.ts`:
   ```ts
   it('declares the five statuses of the design', () => {
@@ -170,7 +170,7 @@ Rutas internas en inglés (`/app/requests`). next-intl `pathnames` las localiza:
 - [ ] **Step 5: Verificar.** `pnpm lint && pnpm typecheck && pnpm test`. Esperado: todo en verde.
 - [ ] **Step 6: CI.** Crear `.github/workflows/ci.yml`:
   - Disparadores: `push` y `pull_request`.
-  - Job `checks` en `ubuntu-latest`: Node 26 vía `.nvmrc`, `corepack enable`, `pnpm install --frozen-lockfile`, `pnpm format:check`, `pnpm lint`, `pnpm typecheck` y `pnpm test`.
+  - Job `checks` en `ubuntu-latest`: Node 26 vía `.nvmrc`, `npm install -g corepack@latest`, `corepack enable`, `pnpm install --frozen-lockfile`, `pnpm format:check`, `pnpm lint`, `pnpm typecheck` y `pnpm test`.
   - Sin secretos.
 - [ ] **Step 7: Commit.** `git commit -m "chore: set up pnpm monorepo, tooling and CI"`
 
@@ -837,7 +837,7 @@ Rutas internas en inglés (`/app/requests`). next-intl `pathnames` las localiza:
   - Arquitectura, con el diagrama del diseño 6.2.
   - Decisiones clave: aislamiento por espacio, concurrencia con `UPDATE` condicional y separación `core`/`demo`.
   - Stack.
-  - Cómo ejecutarlo en local: requisitos, `corepack enable`, `pnpm install`, `docker compose -f compose.dev.yaml up -d`, migraciones, `pnpm dev`.
+  - Cómo ejecutarlo en local: requisitos, `npm install -g corepack@latest`, `corepack enable`, `pnpm install`, `docker compose -f compose.dev.yaml up -d`, migraciones, `pnpm dev`.
   - Pruebas.
   - Licencia: **Pendiente del propietario**; dejar la sección marcada.
   - Enlace a la demo: marcador «coming soon» hasta el hito 2.
@@ -919,3 +919,4 @@ Esta tarea no se delega a Codex sin esa autorización. Su ejecución se planific
 
 - **2026-11-22: el propietario aprueba el plan.** Alcance: ejecutar las tareas 1 a 16 mediante encargos a Codex, cada uno en su worktree y rama, con revisión de Claude Code y aceptación del propietario. No autoriza fusionar, hacer push, publicar imágenes, desplegar ni actuar en el VPS; la tarea 17 sigue bloqueada.
 - **2026-11-22: el propietario acepta E1 (tareas 1 a 3) y autoriza fusionar `feat/e1-base` en `main`.** Alcance: solo esa fusión local. No autoriza push.
+- 2026-11-22: el propietario autoriza corregir el plan tras E1. `packageManager` pasa de `pnpm@12` a `pnpm@12.21.0`, porque Corepack exige una versión completa. Se añade la instalación de Corepack (`npm install -g corepack@latest`), que Node 26 ya no incluye, en las restricciones globales, en la tarea 1, en el CI y en el README de la tarea 15.

@@ -354,7 +354,7 @@ requests    (id uuid PK, demo_space_id, code text, request_type_id,
 
 request_events (id bigserial PK, demo_space_id, request_id, type, actor_id,
              from_status NULL, to_status, note NULL, created_at,
-             FK (demo_space_id, request_id) → requests (demo_space_id, id) ON DELETE CASCADE,
+             FK (demo_space_id, request_id) → requests (demo_space_id, id),
              FK (demo_space_id, actor_id) → users (demo_space_id, id))
 
 sessions    (id uuid PK, token_hash bytea UNIQUE, demo_space_id FK ON DELETE CASCADE,
@@ -548,3 +548,4 @@ Nombres ficticios y textos de la interfaz; organización interna de carpetas den
 - 2026-11-22: el propietario aprueba el stack A: Next.js + TypeScript, API Node.js + TypeScript y PostgreSQL.
 - 2026-11-22: el propietario decide que la interfaz y el README público estén en español e inglés.
 - **2026-11-22: el propietario aprueba el documento completo**, incluidas las decisiones de la sección 16 tal como están redactadas. Alcance: el diseño del MVP. No aprueba el plan ni autoriza implementar, desplegar ni actuar en el VPS. El dominio de la demo sigue pendiente.
+- 2026-11-22: el propietario autoriza corregir una contradicción de la sección 7. El diagrama ponía `ON DELETE CASCADE` en la clave de `request_events` hacia `requests`, y las decisiones clave pedían `NO ACTION` en las claves compuestas. Prevalece `NO ACTION`, que es lo implementado en E1. Los eventos se siguen borrando en cascada desde `demo_spaces`.
