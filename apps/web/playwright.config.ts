@@ -5,6 +5,7 @@ const webPort = process.env.E2E_WEB_PORT ?? '3100';
 const apiPort = process.env.E2E_API_PORT ?? '4000';
 const webOrigin = `http://localhost:${webPort}`;
 const apiOrigin = `http://localhost:${apiPort}`;
+const screenshots = process.env.E2E_SCREENSHOTS === '1';
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url));
 const databaseUrl =
   process.env.DATABASE_URL ??
@@ -12,6 +13,8 @@ const databaseUrl =
 
 export default defineConfig({
   testDir: './e2e',
+  testMatch: screenshots ? '**/screenshots.spec.ts' : '**/*.spec.ts',
+  grepInvert: screenshots ? undefined : /@screenshots/,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -30,7 +33,7 @@ export default defineConfig({
       name: 'mobile',
       use: { ...devices['Pixel 7'], browserName: 'chromium' },
       testIgnore: '**/a11y.spec.ts',
-      grepInvert: /@desktop/,
+      grepInvert: screenshots ? /@desktop/ : /@desktop|@screenshots/,
     },
   ],
   webServer: [

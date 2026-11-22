@@ -5,6 +5,7 @@ import { fileURLToPath, URL } from 'node:url';
 const workspaceRoot = fileURLToPath(new URL('..', import.meta.url));
 const webPort = process.env.E2E_WEB_PORT ?? '3100';
 const apiPort = process.env.E2E_API_PORT ?? '4000';
+const screenshots = process.argv[2] === '--screenshots';
 const env = {
   ...process.env,
   DATABASE_URL:
@@ -12,6 +13,7 @@ const env = {
     'postgresql://flowdesk:flowdesk_dev_only@127.0.0.1:5432/flowdesk',
   APP_ORIGIN: `http://localhost:${webPort}`,
   API_PROXY_URL: `http://localhost:${apiPort}`,
+  E2E_SCREENSHOTS: screenshots ? '1' : '0',
 };
 
 function run(command, args, commandEnv = env) {
@@ -47,5 +49,5 @@ pnpm([
   'test',
   '--config',
   'playwright.config.ts',
-  ...process.argv.slice(2),
+  ...process.argv.slice(screenshots ? 3 : 2),
 ]);

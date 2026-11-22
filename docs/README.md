@@ -1,116 +1,76 @@
 # Documentación de FlowDesk
 
-FlowDesk centraliza las solicitudes internas de una empresa con un flujo trazable. La primera versión es una demo pública: un empleado pide acceso a una herramienta, un aprobador decide y un técnico de TI concede el acceso.
+FlowDesk implementa un flujo de solicitudes de acceso a software: el empleado
+solicita, el aprobador decide y TI registra la concesión manual. La demo usa datos
+ficticios, tres identidades por visitante y espacios temporales aislados.
 
-| Documento | Contenido | Estado |
-| --- | --- | --- |
-| [Diseño del MVP](superpowers/specs/2026-11-22-flowdesk-mvp-design.md) | Alcance, permisos, estados, pantallas, arquitectura, datos, API, seguridad de la demo, pruebas y despliegue | Aprobado el 2026-11-22 |
-| [Plan de implementación](superpowers/plans/2026-11-22-flowdesk-mvp.md) | Tareas pequeñas y verificables, agrupadas en encargos | Aprobado el 2026-11-22 |
+## Referencias
 
-**Stack:** Next.js + TypeScript, API Node.js + TypeScript (Fastify) y PostgreSQL.
+| Documento | Contenido |
+| --- | --- |
+| [README en inglés](../README.md) / [español](../README.es.md) | Presentación, capturas, recorrido, arquitectura y ejecución local |
+| [Diseño del MVP](superpowers/specs/2026-11-22-flowdesk-mvp-design.md) | Diseño aprobado por el propietario el 2026-11-22 |
+| [Plan de implementación](superpowers/plans/2026-11-22-flowdesk-mvp.md) | Plan aprobado el 2026-11-22, tareas y verificaciones |
+| [Convenciones de diseños](superpowers/specs/README.md) / [planes](superpowers/plans/README.md) | Organización de los documentos |
 
-**Cómo se trabaja:** primero se diseña, luego se planifica y por último se implementa con pruebas. Cada etapa necesita una aprobación explícita. Las reglas para los agentes de IA que colaboran en el proyecto están en [AGENTS.md](../AGENTS.md) y [CLAUDE.md](../CLAUDE.md).
+## Componentes implementados
 
-Las convenciones de cada carpeta están en [specs](superpowers/specs/README.md) y [plans](superpowers/plans/README.md).
+| Componente | Responsabilidad |
+| --- | --- |
+| [shared](../packages/shared/src/index.ts) | Tipos de dominio, DTO, fechas de Santiago y validación Zod compartida |
+| [web](../apps/web/package.json) | Next.js con next-intl (es/en), formularios, listados por rol, detalle e historial, selector de identidad, cuenta atrás, reinicio y recorrido guiado |
+| [core](../apps/api/src/core/requests/service.ts) | Políticas y transiciones de solicitudes; actualizaciones condicionales y eventos en la misma transacción |
+| [demo](../apps/api/src/demo/session/session.service.ts) | Sesión por cookie, construcción del `Actor`, espacios, ejemplos, cuotas, caducidad, recorrido y limpieza |
+| [HTTP](../apps/api/src/http/app.ts) | Fastify bajo `/api/v1`, autorización, validación, control de origen, límites, errores JSON y salud |
+| [datos](../apps/api/src/db/schema.ts) | PostgreSQL y Drizzle; aislamiento por `demo_space_id`, claves foráneas compuestas y borrado en cascada |
+| [e2e](../apps/web/playwright.config.ts) | Playwright en escritorio y Pixel 7, recorridos es/en, ciclo de demo, aislamiento, doble envío y axe |
 
-## Pruebas
+La API obtiene el actor de la sesión del servidor; las consultas de `core` filtran
+por `scopeId`. Next.js consume la API desde el mismo origen y no accede a la base
+de datos. En desarrollo reenvía `/api/*` al puerto 4000; `API_PROXY_URL` permite
+configurar ese destino y habilita el proxy en un build de producción explícito.
 
-Desde la raíz, `pnpm test` ejecuta los proyectos `shared`, `api-unit`, `api-integration` y `web`. Solo `api-integration` necesita Docker para iniciar PostgreSQL mediante Testcontainers. `pnpm --filter @flowdesk/api test` ejecuta ambos proyectos de la API y `pnpm --filter @flowdesk/web test` ejecuta las pruebas web en jsdom.
+## Comandos principales
 
-Para ejecutar las pruebas compartidas, unitarias de la API y web, sin Docker:
+Desde la raíz, con Node.js 26 y Docker disponible para integración y navegador:
+
+| Acción | Comando |
+| --- | --- |
+| Preparar pnpm | `npm install -g corepack@latest`, después `corepack enable` |
+| Instalar | `pnpm install` |
+| Iniciar PostgreSQL | `docker compose -f compose.dev.yaml up -d --wait` |
+| Migrar | `pnpm --filter @flowdesk/api migrate` |
+| Desarrollo API | `pnpm --filter @flowdesk/api dev` |
+| Desarrollo web, en otra terminal | `pnpm --filter @flowdesk/web dev` |
+| Todas las pruebas Vitest | `pnpm test` |
+| Solo integración, con Testcontainers | `pnpm exec vitest run --config vitest.workspace.ts --project api-integration` |
+| End-to-end | `pnpm test:e2e` |
+| Capturas de documentación | `pnpm screenshots` |
+| Lint / tipos / formato | `pnpm lint` / `pnpm typecheck` / `pnpm format:check` |
+| Compilar web | `pnpm --filter @flowdesk/web build` |
+
+Antes de migrar o iniciar la API, exportar `DATABASE_URL` y `APP_ORIGIN` con los
+valores locales de [`.env.example`](../.env.example). La API no carga `.env`
+automáticamente. Los README incluyen los pasos para Bash y PowerShell; en este
+último se puede usar `pnpm.cmd` si la política bloquea `pnpm.ps1`.
+
+Pruebas unitarias, compartidas y web sin Docker:
 
 ```sh
 pnpm exec vitest run --config vitest.workspace.ts --project shared --project api-unit --project web
 ```
 
-En PowerShell, si la política de ejecución bloquea `pnpm.ps1`, se puede usar `pnpm.cmd` con los mismos argumentos.
+Para e2e y capturas, instalar Chromium una vez con
+`pnpm --filter @flowdesk/web exec playwright install chromium`.
+[El orquestador](../scripts/e2e.mjs) prepara PostgreSQL, migraciones y build e
+inicia los servidores mediante Playwright. Usa `DATABASE_URL` o su valor local
+de ejemplo y los puertos `E2E_WEB_PORT` (3100) y `E2E_API_PORT` (4000).
+Detener antes los servidores de desarrollo para que use el origen de pruebas.
 
-La prueba de integración de espacios y sesiones se ejecuta con Docker disponible:
+[Las capturas](../apps/web/e2e/screenshots.spec.ts) generan siete PNG en
+`docs/assets/`, en inglés, con un viewport de escritorio de 1280 × 800 y otro
+Pixel 7. Se excluyen de la suite e2e normal. [CI](../.github/workflows/ci.yml)
+ejecuta las verificaciones, integración y e2e; guarda el informe si falla e2e.
 
-```sh
-pnpm exec vitest run --config vitest.workspace.ts --project api-integration apps/api/test/integration/demo-session.test.ts
-```
-
-## Espacios y sesiones de demo
-
-La configuración de la API se valida con Zod en [`config.ts`](../apps/api/src/config.ts). `DATABASE_URL` es obligatoria; [`.env.example`](../.env.example) documenta los valores de desarrollo y los límites por defecto del plan. El proxy de confianza queda desactivado si no se define `TRUST_PROXY_CIDR`.
-
-[`DemoSpaceService`](../apps/api/src/demo/spaces/space.service.ts) crea cada espacio en una transacción con tres identidades, cinco solicitudes de ejemplo en español o inglés y una sesión de empleado. Los ejemplos no consumen cuota; el contador de códigos empieza en cinco. La reserva de capacidad usa un bloqueo asesor transaccional para serializar las creaciones concurrentes.
-
-[`SessionService`](../apps/api/src/demo/session/session.service.ts) resuelve el token por su hash SHA-256 y construye el actor con los usuarios y roles del espacio. La caducidad combina el límite absoluto con la ventana de inactividad; la actividad se escribe como máximo una vez por minuto. Ambos servicios reciben un reloj inyectable.
-
-[`createDemoScopeHooks`](../apps/api/src/demo/limits/scope-hooks.ts) reserva la cuota y asigna el código de cada solicitud dentro de la transacción de `RequestService`. Las actualizaciones condicionales impiden superar la cuota con creaciones concurrentes. Los cinco ejemplos no consumen cuota y las nuevas solicitudes empiezan en `FD-0006`.
-
-[`runCleanup`](../apps/api/src/demo/cleanup/cleanup.ts) borra los espacios caducados en lotes, respetando el margen de limpieza configurado. Usa un bloqueo asesor transaccional distinto del de creación; toda la ejecución ocupa una misma conexión y el bloqueo se libera al confirmar o revertir. `startCleanupScheduler` registra el recuento, si la ejecución se omitió y la duración en milisegundos; registra errores sin detener la programación. Su función de parada cancela el temporizador.
-
-[`getTourProgress`](../apps/api/src/demo/tour/tour.service.ts) calcula los cuatro pasos del recorrido a partir de las solicitudes del visitante y sus eventos. Los ejemplos y los datos de otros espacios quedan excluidos; liberar una solicitud no borra el paso de asignación ya realizado.
-
-Con Docker disponible, las pruebas de integración de Task 7 se ejecutan con:
-
-```sh
-pnpm exec vitest run --config vitest.workspace.ts --project api-integration demo-limits cleanup tour
-```
-
-## Base HTTP (Task 8)
-
-[`buildApp`](../apps/api/src/http/app.ts) recibe la configuración, la base de datos y un reloj opcional. Registra cookies, límites globales por hash de sesión o IP, control de origen para mutaciones, resolución de sesión y errores JSON uniformes. Los logs JSON omiten las cabeceras y truncan las IP a IPv4 /24 o IPv6 /48. `GET /api/v1/health` ejecuta `SELECT 1`; `GET /api/v1/session` devuelve `SessionInfo`.
-
-Además del límite por sesión (`RATE_LIMIT_PER_MIN`, 120 por defecto), un limitador global independiente por IP aplica `RATE_LIMIT_PER_IP_MIN` (300 por defecto) antes de resolver sesiones. Incluye salud y rutas desconocidas; rotar cookies falsas no reinicia ese cupo. Ambos límites por minuto respetan `TRUST_PROXY_CIDR` y devuelven el formato estándar `429 RATE_LIMITED`.
-
-Con las variables de entorno configuradas, `pnpm --filter @flowdesk/api dev` inicia el modo de desarrollo y `pnpm --filter @flowdesk/api start` inicia la API. Ambos usan `tsx`; el proceso escucha en `0.0.0.0:PORT`. `SIGTERM` y `SIGINT` cierran la aplicación, detienen el programador de limpieza y cierran el pool. `pnpm --filter @flowdesk/api migrate` ejecuta las migraciones; no se ejecutan al recibir peticiones.
-
-Las pruebas unitarias de HTTP se ejecutan sin Docker con el comando anterior. Con Docker disponible:
-
-```sh
-pnpm exec vitest run --config vitest.workspace.ts --project api-integration http-foundation
-```
-
-Las pruebas de origen y `trustProxy` usan `POST /api/v1/test-mutation`, registrada solo dentro de las pruebas. El helper [`newVisitor`](../apps/api/test/helpers/http.ts) crea un visitante y añade su cookie, origen y tipo JSON a las peticiones siguientes.
-
-## Rutas HTTP (Task 9)
-
-Las rutas de [`demo`](../apps/api/src/http/routes/demo.ts), [`sesión`](../apps/api/src/http/routes/session.ts), [`solicitudes`](../apps/api/src/http/routes/requests.ts) y [`recorrido`](../apps/api/src/http/routes/tour.ts) usan el prefijo `/api/v1`. Solo salud y creación de espacios permiten peticiones sin sesión. Las rutas protegidas resuelven la identidad actual del servidor en cada petición; los identificadores o roles enviados por el cliente no construyen el actor.
-
-Crear un espacio con una sesión vigente devuelve `200 SessionInfo` sin crear otro espacio ni renovar la cookie; crear uno nuevo o reiniciar devuelve `201 SessionInfo` y establece `fd_session` con los atributos de la configuración. Las creaciones y los reinicios comparten una sola instancia del limitador por IP y hora, además de los límites globales por minuto. La reanudación no consume el cupo horario de creación: el límite de creación se evalúa después de comprobar si la sesión está vigente. Se usa un limitador compartido porque la configuración por ruta del plugin crea almacenes independientes incluso con la misma clave.
-
-Los cuerpos y filtros se validan con los esquemas compartidos; la fecha de creación se evalúa con el reloj inyectado en `America/Santiago`. Un identificador que no sea UUID produce `404 NOT_FOUND`. Un cursor inválido produce `400 VALIDATION_ERROR` en `details.fields.cursor` antes de llegar al servicio o a SQL.
-
-Con Docker disponible, las pruebas de Task 9 se ejecutan con:
-
-```sh
-pnpm exec vitest run --config vitest.workspace.ts --project api-integration routes-
-```
-
-Incluyen el recorrido de nueve pasos, permisos, identidad desactualizada, cuota, concurrencia y aislamiento. La prueba de asignación concurrente inserta un segundo usuario con rol `it_agent` y sesión propia; en esa fixture reutiliza el alias de demo `employee`, liberado para respetar su unicidad por espacio. Las pruebas unitarias de los adaptadores HTTP, validaciones y límites también se ejecutan sin Docker.
-
-## Base web (Task 10)
-
-`pnpm --filter @flowdesk/web dev` inicia Next.js en el puerto 3000; en desarrollo, `/api/*` se reenvía a la API local del puerto 4000. Para los comandos de Next.js se usa `NEXT_TELEMETRY_DISABLED=1` (en PowerShell: `$env:NEXT_TELEMETRY_DISABLED = '1'`). Desarrollo y build usan Webpack con `extensionAlias` para resolver los imports ESM `.js` de `@flowdesk/shared` a su fuente TypeScript. El build transpila ese paquete y usa fuentes del sistema.
-
-La raíz redirige a `/es` si `Accept-Language` empieza por `es`, y a `/en` en los demás casos. La bienvenida consulta la sesión y permite continuarla o crear una demo con el idioma de entrada. La ruta interna `/demo-expired` se muestra como `/es/demo-caducada` o `/en/demo-expired`. El selector cambia el idioma sin mutar la sesión.
-
-Los mensajes de ambos idiomas comparten claves verificadas por pruebas, incluidos los errores de API y los códigos de validación. El cliente envía JSON y credenciales del mismo origen; el navegador añade `Origin` a las mutaciones. Las pruebas de bienvenida cubren reanudación, creación, doble envío, capacidad, límite de peticiones y nueva demo tras caducar. La comprobación manual con la API y un navegador queda a cargo del revisor.
-
-## Estructura de la aplicación (Task 11)
-
-`/app` consulta la sesión y redirige al listado de la identidad activa. La estructura incluye selector de identidad con nombre y rol, cuenta atrás que se actualiza cada 30 segundos y vuelve a calcularse con el `expiresAt` de cada respuesta de sesión, selector de idioma y reinicio con confirmación. Cambiar de identidad o reiniciar actualiza la sesión en caché e invalida todas las consultas; el reinicio envía el idioma actual y vuelve al listado del empleado.
-
-La navegación lateral corresponde al rol activo; por debajo de 768 px se abre en un panel modal. El recorrido plegable tiene nueve pasos y cuatro casillas de progreso calculadas por `/api/v1/demo/tour`, sin edición manual. Cada casilla está deshabilitada, expone `aria-readonly` y se asocia explícitamente con el texto del paso mediante `aria-labelledby`.
-
-El proveedor de TanStack Query escucha errores de consultas y mutaciones. Un `401` dentro de `/app` lleva a la página localizada de caducidad; el `401` esperado de la bienvenida permite crear una demo. Ante un `403` o `404` en un detalle, refresca la sesión y vuelve al listado del rol actual con un aviso. Las pruebas cubren la cuenta atrás, las rutas, la invalidación, el reinicio confirmado, el progreso y estos errores globales. La comprobación manual de conservación de datos al cambiar de identidad y de recreación de FD-0001..FD-0005 al reiniciar queda a cargo del revisor.
-
-## Solicitudes del empleado (Task 12)
-
-El listado del empleado usa la vista `mine`, filtra por estado y aplica 300 ms de espera a la búsqueda. `useRequestList` guarda las páginas por cursor en TanStack Query y expone sus elementos acumulados como `Page<RequestSummary>`; «Cargar más» conserva los filtros. La tabla presenta código, software, acceso, estado con texto y color, y fecha en el idioma activo. El estado vacío ofrece un enlace para crear; los enlaces de creación solo aparecen para la identidad empleado con rol solicitante.
-
-El formulario usa React Hook Form y el esquema compartido con la fecha actual de `America/Santiago`. Muestra el detalle del rol únicamente para `other`, traduce los errores de campo de `details.fields`, informa de los demás errores a nivel del formulario y bloquea envíos simultáneos. Tras crear, invalida listados y recorrido, muestra un aviso y abre el detalle.
-
-Las pruebas verifican espacios y emojis en la justificación, doble envío, errores de campo y cuota, traducción de estados, acumulación de páginas, búsqueda con espera y visibilidad de los enlaces según identidad. La comprobación manual de creación de FD-0006 con la API real queda a cargo del revisor.
-
-## Detalle y flujo de trabajo (Task 13)
-
-El detalle muestra los datos, el estado, solicitante, aprobador, técnico asignado, quién completó la solicitud y un historial ordenado por fecha e identificador. Los eventos incluyen tipo, actor, nota y fecha localizada. Solo se ofrecen las acciones presentes en `allowedActions`, calculadas por la API.
-
-Aprobar, rechazar, liberar y completar abren un diálogo. Los esquemas compartidos validan el texto recortado y su longitud por puntos de código: motivo obligatorio de 10–500 caracteres al rechazar o liberar; comentario o nota opcional de hasta 500 al aprobar o completar. Asignarse envía `{}` directamente. Las acciones bloquean envíos simultáneos e invalidan detalle, listados y recorrido tras completarse. Un `409` recarga el detalle y muestra un aviso; las pruebas del detalle verifican también la redirección por `403`/`404` y la identidad desactualizada en una acción.
-
-La bandeja reutiliza `RequestTable` en las vistas `approvals_pending` y `approvals_decided`. La cola usa `queue`, `assigned` y `completed`, con pestañas y estados vacíos traducidos. Las pruebas cubren las vistas enviadas a la API, acciones permitidas, validación, doble envío, conflictos, foco de los diálogos e historial en ambos idiomas. El recorrido completo de nueve pasos en navegador, en español e inglés y con la API real, queda a cargo del revisor.
+Las reglas de contribución y proceso están en [AGENTS.md](../AGENTS.md) y
+[CLAUDE.md](../CLAUDE.md).

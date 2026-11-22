@@ -16,3 +16,25 @@ Este repositorio se desarrolla con agentes de IA bajo dirección y aprobación h
 - Mantener actualizada la documentación afectada y sus enlaces relativos.
 - No versionar secretos. `.env.example` lleva solo valores ficticios.
 - Antes de entregar, ejecutar las verificaciones de la tarea e informar de sus resultados y de lo que no se pudo verificar.
+
+## Comandos
+
+Desde la raíz; Node.js 26. Preparar pnpm con `npm install -g corepack@latest` y
+`corepack enable`. Exportar las variables locales de [`.env.example`](.env.example)
+antes de migrar o iniciar la API; los pasos están en el [README](README.es.md).
+
+| Acción | Comando |
+| --- | --- |
+| Instalar | `pnpm install` |
+| PostgreSQL local | `docker compose -f compose.dev.yaml up -d --wait` |
+| Migrar | `pnpm --filter @flowdesk/api migrate` |
+| Desarrollo, en dos terminales | `pnpm --filter @flowdesk/api dev` / `pnpm --filter @flowdesk/web dev` |
+| Pruebas unitarias, web e integración | `pnpm test` (integración necesita Docker) |
+| End-to-end | `pnpm test:e2e` (necesita Docker y Chromium de Playwright) |
+| Capturas | `pnpm screenshots` (misma preparación que e2e) |
+| Lint | `pnpm lint` |
+| Tipos | `pnpm typecheck` |
+| Formato | `pnpm format:check` |
+| Compilar web | `pnpm --filter @flowdesk/web build` |
+
+En PowerShell, usar `pnpm.cmd` si la política bloquea `pnpm.ps1`.
