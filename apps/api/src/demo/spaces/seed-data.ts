@@ -24,16 +24,16 @@ export function seedContent(locale: Locale): {
   return {
     users: {
       employee: {
-        displayName: en ? 'Demo Employee' : 'Empleado de ejemplo',
-        jobTitle: en ? 'Marketing employee' : 'Empleado de marketing',
+        displayName: 'Laura Méndez',
+        jobTitle: 'Marketing',
       },
       approver: {
-        displayName: en ? 'Demo Approver' : 'Aprobador de ejemplo',
-        jobTitle: en ? 'IT lead' : 'Responsable de TI',
+        displayName: 'Diego Rojas',
+        jobTitle: en ? 'Head of IT' : 'Jefe de TI',
       },
       it_agent: {
-        displayName: en ? 'Demo Technician' : 'Técnico de ejemplo',
-        jobTitle: en ? 'IT support specialist' : 'Especialista de soporte TI',
+        displayName: 'Ana Torres',
+        jobTitle: en ? 'IT Support' : 'Soporte TI',
       },
     },
     samples: [

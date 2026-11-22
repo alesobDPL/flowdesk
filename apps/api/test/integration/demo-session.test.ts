@@ -107,9 +107,18 @@ it.each<Locale>(['es', 'en'])(
     expect(samples[0]?.justification).toMatch(
       locale === 'en' ? /customer/i : /clientes/i,
     );
-    expect(employee.jobTitle).toMatch(
-      locale === 'en' ? /employee/i : /emplead/i,
-    );
+    expect(employee).toMatchObject({
+      displayName: 'Laura Méndez',
+      jobTitle: 'Marketing',
+    });
+    expect(approver).toMatchObject({
+      displayName: 'Diego Rojas',
+      jobTitle: locale === 'en' ? 'Head of IT' : 'Jefe de TI',
+    });
+    expect(agent).toMatchObject({
+      displayName: 'Ana Torres',
+      jobTitle: locale === 'en' ? 'IT Support' : 'Soporte TI',
+    });
     const expectedEvents = [
       ['created', 'approved', 'assigned', 'completed'],
       ['created', 'rejected'],
