@@ -918,3 +918,4 @@ Esta tarea no se delega a Codex sin esa autorización. Su ejecución se planific
 ## Registro de aprobación
 
 - **2026-11-22: el propietario aprueba el plan.** Alcance: ejecutar las tareas 1 a 16 mediante encargos a Codex, cada uno en su worktree y rama, con revisión de Claude Code y aceptación del propietario. No autoriza fusionar, hacer push, publicar imágenes, desplegar ni actuar en el VPS; la tarea 17 sigue bloqueada.
+- **2026-11-22: el propietario acepta E1 (tareas 1 a 3) y autoriza fusionar `feat/e1-base` en `main`.** Alcance: solo esa fusión local. No autoriza push.
