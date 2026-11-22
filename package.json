@@ -1,0 +1,25 @@
+{
+  "name": "flowdesk",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.21.0",
+  "engines": {
+    "node": ">=26"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit && pnpm -r typecheck",
+    "test": "vitest run --config vitest.workspace.ts",
+    "format:check": "prettier --check . --ignore-path .gitignore --ignore-path .prettierignore"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.0",
+    "@types/node": "^26.0.0",
+    "eslint": "^10.0.0",
+    "eslint-config-prettier": "^10.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "~6.0.0",
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^5.0.0"
+  }
+}

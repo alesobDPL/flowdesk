@@ -1,0 +1,8 @@
+node_modules/
+dist/
+coverage/
+apps/api/drizzle/
+# Documentación previa al encargo E1.
+docs/
+AGENTS.md
+CLAUDE.md

@@ -18,3 +18,11 @@ node_modules/
 # Skills de Superpowers instaladas localmente para los agentes (contenido de terceros)
 .agents/
 skills-lock.json
+
+.next/
+dist/
+coverage/
+playwright-report/
+test-results/
+.tools/
+.superpowers/
