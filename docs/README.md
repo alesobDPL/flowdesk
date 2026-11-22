@@ -17,8 +17,24 @@ Las convenciones de cada carpeta están en [specs](superpowers/specs/README.md) 
 
 Desde la raíz, `pnpm test` ejecuta los proyectos `shared`, `api-unit` y `api-integration`. Solo `api-integration` necesita Docker para iniciar PostgreSQL mediante Testcontainers. `pnpm --filter @flowdesk/api test` ejecuta ambos proyectos de la API.
 
-Para ejecutar únicamente las pruebas unitarias del dominio, sin Docker:
+Para ejecutar las pruebas compartidas y unitarias de la API, sin Docker:
 
 ```sh
-pnpm exec vitest run --config vitest.workspace.ts --project api-unit
+pnpm exec vitest run --config vitest.workspace.ts --project shared --project api-unit
 ```
+
+En PowerShell, si la política de ejecución bloquea `pnpm.ps1`, se puede usar `pnpm.cmd` con los mismos argumentos.
+
+La prueba de integración de espacios y sesiones se ejecuta con Docker disponible:
+
+```sh
+pnpm exec vitest run --config vitest.workspace.ts --project api-integration apps/api/test/integration/demo-session.test.ts
+```
+
+## Espacios y sesiones de demo
+
+La configuración de la API se valida con Zod en [`config.ts`](../apps/api/src/config.ts). `DATABASE_URL` es obligatoria; [`.env.example`](../.env.example) documenta los valores de desarrollo y los límites por defecto del plan. El proxy de confianza queda desactivado si no se define `TRUST_PROXY_CIDR`.
+
+[`DemoSpaceService`](../apps/api/src/demo/spaces/space.service.ts) crea cada espacio en una transacción con tres identidades, cinco solicitudes de ejemplo en español o inglés y una sesión de empleado. Los ejemplos no consumen cuota; el contador de códigos empieza en cinco. La reserva de capacidad usa un bloqueo asesor transaccional para serializar las creaciones concurrentes.
+
+[`SessionService`](../apps/api/src/demo/session/session.service.ts) resuelve el token por su hash SHA-256 y construye el actor con los usuarios y roles del espacio. La caducidad combina el límite absoluto con la ventana de inactividad; la actividad se escribe como máximo una vez por minuto. Ambos servicios reciben un reloj inyectable. Las cuotas, la limpieza programada y el progreso del recorrido corresponden a Task 7.
