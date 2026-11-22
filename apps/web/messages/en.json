@@ -52,6 +52,54 @@
     "DEMO_AT_CAPACITY": "All demo spaces are in use right now. Please try again in a few minutes.",
     "INTERNAL_ERROR": "Something went wrong. Please try again in a moment."
   },
+  "app": {
+    "viewingAs": "Viewing as",
+    "identities": {
+      "employee": "Employee",
+      "approver": "Approver",
+      "it_agent": "IT technician"
+    },
+    "navigation": "Navigation",
+    "navigationDescription": "Your role’s workspace and the guided tour.",
+    "openMenu": "Open navigation",
+    "nav": {
+      "requests": "My requests",
+      "approvals": "Approvals inbox",
+      "queue": "IT queue"
+    },
+    "retry": "Try again",
+    "redirecting": "Opening your workspace…",
+    "requestUnavailable": "This request is no longer available for your current role. You have returned to your list.",
+    "reset": "Reset demo",
+    "resetTitle": "Start over with a fresh demo?",
+    "resetDescription": "Your current demo will end. A new space will open with the five sample requests. Your changes will not carry over.",
+    "cancel": "Cancel",
+    "confirmReset": "Start a fresh demo",
+    "resetting": "Resetting demo…"
+  },
+  "countdown": {
+    "label": "Demo time remaining",
+    "expiresIn": "Demo · expires in {remaining}",
+    "expired": "Demo expired",
+    "hoursMinutes": "{hours, number} h {minutes, number} min",
+    "minutes": "{minutes, number} min",
+    "lessThanMinute": "<1 min"
+  },
+  "tour": {
+    "title": "Guided tour",
+    "description": "Explore at your own pace. Checkmarks update automatically for requests you create; sample requests do not count.",
+    "steps": {
+      "1": "Enter as an employee.",
+      "2": "Create a software access request.",
+      "3": "Check its initial status.",
+      "4": "Switch to the approver.",
+      "5": "Find the pending request and approve it.",
+      "6": "Switch to the IT technician.",
+      "7": "Take the request from the work queue.",
+      "8": "Record that access was granted manually.",
+      "9": "Return to the employee to check the final status and history."
+    }
+  },
   "validation": {
     "too_short": "Please add more detail.",
     "too_long": "This text is too long.",

@@ -26,3 +26,6 @@ playwright-report/
 test-results/
 .tools/
 .superpowers/
+
+# Generado por Next.js en cada dev/build (la documentación de Next recomienda no versionarlo).
+apps/web/next-env.d.ts

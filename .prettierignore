@@ -3,8 +3,6 @@ dist/
 coverage/
 apps/api/drizzle/
 pnpm-lock.yaml
-# Archivo generado por Next.js en cada build/dev.
-apps/web/next-env.d.ts
 # Documentación previa al encargo E1.
 docs/
 AGENTS.md

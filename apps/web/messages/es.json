@@ -52,6 +52,54 @@
     "DEMO_AT_CAPACITY": "Todos los espacios de demo están en uso. Vuelve a intentarlo en unos minutos.",
     "INTERNAL_ERROR": "Algo salió mal. Vuelve a intentarlo en un momento."
   },
+  "app": {
+    "viewingAs": "Viendo como",
+    "identities": {
+      "employee": "Empleado",
+      "approver": "Aprobador",
+      "it_agent": "Técnico de TI"
+    },
+    "navigation": "Navegación",
+    "navigationDescription": "El espacio de tu rol y el recorrido guiado.",
+    "openMenu": "Abrir navegación",
+    "nav": {
+      "requests": "Mis solicitudes",
+      "approvals": "Bandeja de aprobación",
+      "queue": "Cola de TI"
+    },
+    "retry": "Volver a intentar",
+    "redirecting": "Abriendo tu espacio de trabajo…",
+    "requestUnavailable": "Esta solicitud ya no está disponible para tu rol actual. Has vuelto a tu listado.",
+    "reset": "Reiniciar demo",
+    "resetTitle": "¿Empezar de nuevo con una demo?",
+    "resetDescription": "Tu demo actual terminará. Se abrirá un espacio nuevo con las cinco solicitudes de ejemplo. Tus cambios no se trasladarán.",
+    "cancel": "Cancelar",
+    "confirmReset": "Empezar una nueva demo",
+    "resetting": "Reiniciando demo…"
+  },
+  "countdown": {
+    "label": "Tiempo restante de la demo",
+    "expiresIn": "Demo · caduca en {remaining}",
+    "expired": "Demo caducada",
+    "hoursMinutes": "{hours, number} h {minutes, number} min",
+    "minutes": "{minutes, number} min",
+    "lessThanMinute": "<1 min"
+  },
+  "tour": {
+    "title": "Recorrido guiado",
+    "description": "Explora a tu ritmo. Las casillas se actualizan con las solicitudes que creas; las de ejemplo no cuentan.",
+    "steps": {
+      "1": "Ingresa como empleado.",
+      "2": "Crea una solicitud de acceso a software.",
+      "3": "Consulta su estado inicial.",
+      "4": "Cambia al aprobador.",
+      "5": "Encuentra la solicitud pendiente y apruébala.",
+      "6": "Cambia al técnico de TI.",
+      "7": "Toma la solicitud de la cola de trabajo.",
+      "8": "Registra que el acceso se concedió manualmente.",
+      "9": "Vuelve al empleado para consultar el estado final y el historial."
+    }
+  },
   "validation": {
     "too_short": "Añade más detalle.",
     "too_long": "Este texto es demasiado largo.",

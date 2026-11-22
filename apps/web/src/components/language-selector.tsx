@@ -11,7 +11,11 @@ import {
   SelectValue,
 } from './ui/select';
 
-export function LanguageSelector({ href }: { href: '/' | '/demo-expired' }) {
+export function LanguageSelector({
+  href,
+}: {
+  href: Parameters<ReturnType<typeof useRouter>['replace']>[0];
+}) {
   const locale = useLocale();
   const t = useTranslations('common');
   const router = useRouter();
