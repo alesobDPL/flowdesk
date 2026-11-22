@@ -1,0 +1,135 @@
+x-api-image: &api-image
+  image: ${FLOWDESK_IMAGE_REGISTRY:-ghcr.io/alesobdpl}/flowdesk-api:${FLOWDESK_IMAGE_TAG:-local}
+  build:
+    context: .
+    dockerfile: apps/api/Dockerfile
+  networks:
+    - internal
+  mem_limit: 256m
+
+x-api-environment: &api-environment
+  NODE_ENV: production
+  PORT: 4000
+  DATABASE_URL: postgresql://${POSTGRES_USER:-flowdesk}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@postgres:5432/${POSTGRES_DB:-flowdesk}
+  APP_ORIGIN: ${APP_ORIGIN:?Set APP_ORIGIN in .env}
+  TRUST_PROXY_CIDR: 172.30.0.1/32
+  LOG_LEVEL: ${LOG_LEVEL:-info}
+  DEMO_SPACE_TTL_MIN: ${DEMO_SPACE_TTL_MIN:-120}
+  DEMO_IDLE_MIN: ${DEMO_IDLE_MIN:-30}
+  DEMO_MAX_REQUESTS: ${DEMO_MAX_REQUESTS:-30}
+  DEMO_SPACES_PER_IP_HOUR: ${DEMO_SPACES_PER_IP_HOUR:-10}
+  DEMO_MAX_ACTIVE_SPACES: ${DEMO_MAX_ACTIVE_SPACES:-500}
+  RATE_LIMIT_PER_MIN: ${RATE_LIMIT_PER_MIN:-120}
+  RATE_LIMIT_PER_IP_MIN: ${RATE_LIMIT_PER_IP_MIN:-300}
+  BODY_LIMIT_BYTES: ${BODY_LIMIT_BYTES:-16384}
+  CLEANUP_INTERVAL_MIN: ${CLEANUP_INTERVAL_MIN:-10}
+  CLEANUP_GRACE_MIN: ${CLEANUP_GRACE_MIN:-15}
+  CLEANUP_BATCH: ${CLEANUP_BATCH:-50}
+
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-flowdesk}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-flowdesk}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - internal
+    mem_limit: 384m
+    restart: unless-stopped
+    healthcheck:
+      test:
+        ['CMD-SHELL', 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  api:
+    <<: *api-image
+    environment: *api-environment
+    ports:
+      - '127.0.0.1:${FLOWDESK_API_PORT:-4000}:4000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:4000/api/v1/health', {signal: AbortSignal.timeout(3000)}).then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  web:
+    image: ${FLOWDESK_IMAGE_REGISTRY:-ghcr.io/alesobdpl}/flowdesk-web:${FLOWDESK_IMAGE_TAG:-local}
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: 1
+      HOSTNAME: 0.0.0.0
+      PORT: 3000
+    ports:
+      - '127.0.0.1:${FLOWDESK_WEB_PORT:-3000}:3000'
+    networks:
+      - internal
+    mem_limit: 384m
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000/es', {signal: AbortSignal.timeout(3000)}).then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  migrate:
+    <<: *api-image
+    profiles: [migrate]
+    environment: *api-environment
+    command: ['node', 'dist/cli.js', 'migrate']
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: 'no'
+
+  caddy:
+    image: caddy:2
+    profiles: [local-proxy]
+    ports:
+      - '127.0.0.1:${FLOWDESK_PROXY_PORT:-8080}:8080'
+    volumes:
+      - ./deploy/Caddyfile.local:/etc/caddy/Caddyfile:ro
+    networks:
+      - internal
+    depends_on:
+      api:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+    restart: unless-stopped
+
+networks:
+  internal:
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+          gateway: 172.30.0.1
+
+volumes:
+  postgres_data:

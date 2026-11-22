@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "esbuild src/server.ts src/cli.ts --outdir=dist --bundle --platform=node --format=esm --target=node26 --packages=external --alias:@flowdesk/shared=../../packages/shared/src/index.ts",
     "dev": "tsx watch src/server.ts",
     "start": "tsx src/server.ts",
     "migrate": "tsx src/cli.ts migrate",
@@ -23,6 +24,7 @@
     "@testcontainers/postgresql": "^12.2.2",
     "@types/pg": "^8.23.1",
     "drizzle-kit": "~0.31.11",
+    "esbuild": "^0.28.2",
     "testcontainers": "^12.2.2",
     "tsx": "^4.23.15"
   }

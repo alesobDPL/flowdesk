@@ -11,6 +11,7 @@ ficticios, tres identidades por visitante y espacios temporales aislados.
 | [README en inglés](../README.md) / [español](../README.es.md) | Presentación, capturas, recorrido, arquitectura y ejecución local |
 | [Diseño del MVP](superpowers/specs/2026-11-22-flowdesk-mvp-design.md) | Diseño aprobado por el propietario el 2026-11-22 |
 | [Plan de implementación](superpowers/plans/2026-11-22-flowdesk-mvp.md) | Plan aprobado el 2026-11-22, tareas y verificaciones |
+| [Guía de despliegue](despliegue/README.md) | Imágenes, Compose, Caddy, migraciones, prueba local y mediciones pendientes; VPS bloqueado |
 | [Convenciones de diseños](superpowers/specs/README.md) / [planes](superpowers/plans/README.md) | Organización de los documentos |
 
 ## Componentes implementados
@@ -48,6 +49,7 @@ Desde la raíz, con Node.js 26 y Docker disponible para integración y navegador
 | Capturas de documentación | `pnpm screenshots` |
 | Lint / tipos / formato | `pnpm lint` / `pnpm typecheck` / `pnpm format:check` |
 | Compilar web | `pnpm --filter @flowdesk/web build` |
+| Compilar API (esbuild) | `pnpm --filter @flowdesk/api build` |
 
 Antes de migrar o iniciar la API, exportar `DATABASE_URL` y `APP_ORIGIN` con los
 valores locales de [`.env.example`](../.env.example). La API no carga `.env`
@@ -66,6 +68,10 @@ Para e2e y capturas, instalar Chromium una vez con
 inicia los servidores mediante Playwright. Usa `DATABASE_URL` o su valor local
 de ejemplo y los puertos `E2E_WEB_PORT` (3100) y `E2E_API_PORT` (4000).
 Detener antes los servidores de desarrollo para que use el origen de pruebas.
+
+Con `PLAYWRIGHT_BASE_URL`, el orquestador omite esa preparación y Playwright no
+inicia servidores. Para el Compose de despliegue ejecutar solo `tour`, siguiendo
+la [guía local](despliegue/README.md#prueba-local-desde-cero-revisor).
 
 [Las capturas](../apps/web/e2e/screenshots.spec.ts) generan siete PNG en
 `docs/assets/`, en inglés, con un viewport de escritorio de 1280 × 800 y otro

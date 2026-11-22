@@ -3,6 +3,31 @@ import config from '../next.config';
 
 afterEach(() => vi.unstubAllEnvs());
 
+it('traces standalone dependencies from the workspace root', () => {
+  expect(config.outputFileTracingRoot).toBe(
+    resolve(import.meta.dirname, '../../..'),
+  );
+});
+
+it('keeps production hydration compatible with the security headers', async () => {
+  vi.stubEnv('NODE_ENV', 'production');
+  const rules = await config.headers?.();
+  const headers = rules?.find(({ source }) => source === '/:path*')?.headers;
+  expect(headers).toEqual(
+    expect.arrayContaining([
+      { key: 'X-Content-Type-Options', value: 'nosniff' },
+      { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+    ]),
+  );
+  const csp = headers?.find(
+    ({ key }) => key === 'Content-Security-Policy',
+  )?.value;
+  expect(csp).toContain("script-src 'self' 'unsafe-inline'");
+  expect(csp).toContain("style-src 'self' 'unsafe-inline'");
+  expect(csp).toContain("frame-ancestors 'none'");
+  expect(csp).not.toContain('unsafe-eval');
+});
+
 describe('API proxy rewrites', () => {
   it('keeps the default development proxy', async () => {
     vi.stubEnv('NODE_ENV', 'development');
@@ -32,3 +57,4 @@ describe('API proxy rewrites', () => {
     expect(await config.rewrites?.()).toEqual([]);
   });
 });
+import { resolve } from 'node:path';

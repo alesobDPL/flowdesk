@@ -5,6 +5,7 @@ const webPort = process.env.E2E_WEB_PORT ?? '3100';
 const apiPort = process.env.E2E_API_PORT ?? '4000';
 const webOrigin = `http://localhost:${webPort}`;
 const apiOrigin = `http://localhost:${apiPort}`;
+const externalBaseUrl = process.env.PLAYWRIGHT_BASE_URL;
 const screenshots = process.env.E2E_SCREENSHOTS === '1';
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url));
 const databaseUrl =
@@ -23,7 +24,7 @@ export default defineConfig({
   expect: { timeout: 15_000 },
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
-    baseURL: webOrigin,
+    baseURL: externalBaseUrl ?? webOrigin,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
@@ -36,31 +37,33 @@ export default defineConfig({
       grepInvert: screenshots ? /@desktop/ : /@desktop|@screenshots/,
     },
   ],
-  webServer: [
-    {
-      command: 'pnpm --filter @flowdesk/api start',
-      cwd: workspaceRoot,
-      env: {
-        NODE_ENV: 'test',
-        DATABASE_URL: databaseUrl,
-        APP_ORIGIN: webOrigin,
-        PORT: apiPort,
-        RATE_LIMIT_PER_MIN: '100000',
-        RATE_LIMIT_PER_IP_MIN: '100000',
-        DEMO_SPACES_PER_IP_HOUR: '10000',
-        DEMO_MAX_ACTIVE_SPACES: '10000',
-      },
-      url: `${apiOrigin}/api/v1/health`,
-      reuseExistingServer: !process.env.CI,
-      timeout: 120_000,
-    },
-    {
-      command: `pnpm --filter @flowdesk/web exec next start -p ${webPort}`,
-      cwd: workspaceRoot,
-      env: { NODE_ENV: 'production', API_PROXY_URL: apiOrigin },
-      url: `${webOrigin}/es`,
-      reuseExistingServer: !process.env.CI,
-      timeout: 120_000,
-    },
-  ],
+  webServer: externalBaseUrl
+    ? undefined
+    : [
+        {
+          command: 'pnpm --filter @flowdesk/api start',
+          cwd: workspaceRoot,
+          env: {
+            NODE_ENV: 'test',
+            DATABASE_URL: databaseUrl,
+            APP_ORIGIN: webOrigin,
+            PORT: apiPort,
+            RATE_LIMIT_PER_MIN: '100000',
+            RATE_LIMIT_PER_IP_MIN: '100000',
+            DEMO_SPACES_PER_IP_HOUR: '10000',
+            DEMO_MAX_ACTIVE_SPACES: '10000',
+          },
+          url: `${apiOrigin}/api/v1/health`,
+          reuseExistingServer: !process.env.CI,
+          timeout: 120_000,
+        },
+        {
+          command: `pnpm --filter @flowdesk/web exec next start -p ${webPort}`,
+          cwd: workspaceRoot,
+          env: { NODE_ENV: 'production', API_PROXY_URL: apiOrigin },
+          url: `${webOrigin}/es`,
+          reuseExistingServer: !process.env.CI,
+          timeout: 120_000,
+        },
+      ],
 });

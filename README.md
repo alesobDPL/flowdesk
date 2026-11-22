@@ -72,7 +72,7 @@ flowchart LR
     API --> DB[(PostgreSQL)]
 ```
 
-Locally, Next.js forwards `/api/*` to the API. The browser always uses the web
+During development, Next.js forwards `/api/*` to the API. The browser always uses the web
 origin; the API owns sessions, authorization and business rules. Next.js has no
 business logic or database access.
 
@@ -112,6 +112,10 @@ business logic or database access.
 | Verification          | Vitest, Testing Library, Testcontainers, Playwright, axe, ESLint, Prettier, GitHub Actions  |
 
 ## Run locally
+
+For container images, Compose and Caddy, see the
+[deployment guide (Spanish)](docs/despliegue/README.md). It includes the tour against
+`PLAYWRIGHT_BASE_URL`; VPS operations require explicit owner authorization.
 
 Requirements: **Node.js 26** (see [.nvmrc](.nvmrc)), Docker with Compose v2 and a
 running Docker engine. Run commands from the repository root after cloning.

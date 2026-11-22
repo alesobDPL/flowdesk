@@ -74,7 +74,7 @@ flowchart LR
     API --> DB[(PostgreSQL)]
 ```
 
-En local, Next.js reenvía `/api/*` a la API. El navegador siempre usa el origen de
+En desarrollo, Next.js reenvía `/api/*` a la API. El navegador siempre usa el origen de
 la web; la API controla sesiones, autorización y reglas de negocio. Next.js no
 contiene lógica de negocio ni accede a la base de datos.
 
@@ -115,6 +115,10 @@ contiene lógica de negocio ni accede a la base de datos.
 | Verificación        | Vitest, Testing Library, Testcontainers, Playwright, axe, ESLint, Prettier, GitHub Actions  |
 
 ## Ejecución local
+
+Para probar las imágenes con Compose y Caddy, seguir la
+[guía de despliegue](docs/despliegue/README.md). Incluye el recorrido contra
+`PLAYWRIGHT_BASE_URL`; cualquier actuación en el VPS requiere autorización expresa.
 
 Requisitos: **Node.js 26** (ver [.nvmrc](.nvmrc)), Docker con Compose v2 y el motor
 de Docker iniciado. Ejecuta los comandos desde la raíz del repositorio después

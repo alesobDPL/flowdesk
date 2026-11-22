@@ -5,13 +5,17 @@ import { fileURLToPath, URL } from 'node:url';
 const workspaceRoot = fileURLToPath(new URL('..', import.meta.url));
 const webPort = process.env.E2E_WEB_PORT ?? '3100';
 const apiPort = process.env.E2E_API_PORT ?? '4000';
-const screenshots = process.argv[2] === '--screenshots';
+const args = process.argv.slice(2);
+// pnpm passes the script separator through; do not forward it to pnpm exec.
+if (args[0] === '--') args.shift();
+const screenshots = args[0] === '--screenshots';
+if (screenshots) args.shift();
 const env = {
   ...process.env,
   DATABASE_URL:
     process.env.DATABASE_URL ??
     'postgresql://flowdesk:flowdesk_dev_only@127.0.0.1:5432/flowdesk',
-  APP_ORIGIN: `http://localhost:${webPort}`,
+  APP_ORIGIN: process.env.PLAYWRIGHT_BASE_URL ?? `http://localhost:${webPort}`,
   API_PROXY_URL: `http://localhost:${apiPort}`,
   E2E_SCREENSHOTS: screenshots ? '1' : '0',
 };
@@ -35,12 +39,14 @@ const pnpm = (args, commandEnv = env) =>
     ? run(process.execPath, [pnpmEntry, ...args], commandEnv)
     : run(pnpmEntry, args, commandEnv);
 
-run('docker', ['compose', '-f', 'compose.dev.yaml', 'up', '-d', '--wait']);
-pnpm(['--filter', '@flowdesk/api', 'migrate'], { ...env, NODE_ENV: 'test' });
-pnpm(['--filter', '@flowdesk/web', 'build'], {
-  ...env,
-  NODE_ENV: 'production',
-});
+if (!process.env.PLAYWRIGHT_BASE_URL) {
+  run('docker', ['compose', '-f', 'compose.dev.yaml', 'up', '-d', '--wait']);
+  pnpm(['--filter', '@flowdesk/api', 'migrate'], { ...env, NODE_ENV: 'test' });
+  pnpm(['--filter', '@flowdesk/web', 'build'], {
+    ...env,
+    NODE_ENV: 'production',
+  });
+}
 pnpm([
   '--filter',
   '@flowdesk/web',
@@ -49,5 +55,5 @@ pnpm([
   'test',
   '--config',
   'playwright.config.ts',
-  ...process.argv.slice(screenshots ? 3 : 2),
+  ...args,
 ]);
