@@ -95,6 +95,14 @@ Los mensajes de ambos idiomas comparten claves verificadas por pruebas, incluido
 
 `/app` consulta la sesión y redirige al listado de la identidad activa. La estructura incluye selector de identidad con nombre y rol, cuenta atrás que se actualiza cada 30 segundos y vuelve a calcularse con el `expiresAt` de cada respuesta de sesión, selector de idioma y reinicio con confirmación. Cambiar de identidad o reiniciar actualiza la sesión en caché e invalida todas las consultas; el reinicio envía el idioma actual y vuelve al listado del empleado.
 
-La navegación lateral corresponde al rol activo; por debajo de 768 px se abre en un panel modal. El recorrido plegable tiene nueve pasos y cuatro casillas de progreso calculadas por `/api/v1/demo/tour`, sin edición manual. Los listados de solicitudes, aprobación y TI contienen por ahora solo su título traducido; las tareas 12–13 implementan su contenido.
+La navegación lateral corresponde al rol activo; por debajo de 768 px se abre en un panel modal. El recorrido plegable tiene nueve pasos y cuatro casillas de progreso calculadas por `/api/v1/demo/tour`, sin edición manual. Los listados de aprobación y TI contienen por ahora solo su título traducido; la tarea 13 implementa su contenido.
 
 El proveedor de TanStack Query escucha errores de consultas y mutaciones. Un `401` dentro de `/app` lleva a la página localizada de caducidad; el `401` esperado de la bienvenida permite crear una demo. Ante un `403` o `404` en un detalle, refresca la sesión y vuelve al listado del rol actual con un aviso, preparado para Task 13. Las pruebas cubren la cuenta atrás, las rutas, la invalidación, el reinicio confirmado, el progreso y estos errores globales. La comprobación manual de conservación de datos al cambiar de identidad y de recreación de FD-0001..FD-0005 al reiniciar queda a cargo del revisor.
+
+## Solicitudes del empleado (Task 12)
+
+El listado del empleado usa la vista `mine`, filtra por estado y aplica 300 ms de espera a la búsqueda. `useRequestList` guarda las páginas por cursor en TanStack Query y expone sus elementos acumulados como `Page<RequestSummary>`; «Cargar más» conserva los filtros. La tabla presenta código, software, acceso, estado con texto y color, y fecha en el idioma activo. El estado vacío ofrece un enlace para crear; los enlaces de creación solo aparecen para la identidad empleado con rol solicitante.
+
+El formulario usa React Hook Form y el esquema compartido con la fecha actual de `America/Santiago`. Muestra el detalle del rol únicamente para `other`, traduce los errores de campo de `details.fields`, informa de los demás errores a nivel del formulario y bloquea envíos simultáneos. Tras crear, invalida listados y recorrido, muestra un aviso y abre el detalle. La ruta localizada del detalle ya existe y muestra por ahora solo un título; Task 13 la sustituye.
+
+Las pruebas verifican espacios y emojis en la justificación, doble envío, errores de campo y cuota, traducción de estados, acumulación de páginas, búsqueda con espera y visibilidad de los enlaces según identidad. La comprobación manual de creación de FD-0006 con la API real queda a cargo del revisor.

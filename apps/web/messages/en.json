@@ -100,6 +100,56 @@
       "9": "Return to the employee to check the final status and history."
     }
   },
+  "statuses": {
+    "pending_approval": "Pending approval",
+    "rejected": "Rejected",
+    "approved": "Approved · in IT queue",
+    "in_progress": "In progress",
+    "completed": "Completed"
+  },
+  "accessLevels": {
+    "read": "Read",
+    "edit": "Edit",
+    "admin": "Administration",
+    "other": "Other"
+  },
+  "requests": {
+    "new": "New request",
+    "detailTitle": "Request details",
+    "back": "Back to my requests",
+    "emptyMine": "You have not created any requests yet. Request access to a tool to get started.",
+    "emptyFiltered": "No requests match these filters. Try a different status or search.",
+    "createFirst": "Create a request",
+    "caption": "Software access requests",
+    "loadMore": "Load more",
+    "loadingMore": "Loading more…",
+    "statusFilter": "Status",
+    "allStatuses": "All statuses",
+    "search": "Search requests",
+    "searchPlaceholder": "Code or software name",
+    "open": "Open request {code}",
+    "columns": {
+      "code": "Code",
+      "software": "Software",
+      "access": "Access level",
+      "status": "Status",
+      "date": "Created"
+    }
+  },
+  "requestForm": {
+    "title": "New software access request",
+    "credentialsNotice": "Do not include passwords or credentials.",
+    "softwareName": "Software or tool",
+    "accessLevel": "Access level",
+    "accessDetail": "Role details",
+    "justification": "Justification",
+    "justificationHint": "Explain why you need access (10–1000 characters).",
+    "neededBy": "Needed by (optional)",
+    "comments": "Comments (optional)",
+    "submit": "Submit request",
+    "submitting": "Submitting…",
+    "success": "Request {code} created."
+  },
   "validation": {
     "too_short": "Please add more detail.",
     "too_long": "This text is too long.",

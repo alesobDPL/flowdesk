@@ -2,16 +2,23 @@
 
 import {
   useMutation,
+  useInfiniteQuery,
   useQuery,
   useQueryClient,
   type UseMutationResult,
   type UseQueryResult,
+  type UseInfiniteQueryResult,
 } from '@tanstack/react-query';
 import type {
   DemoIdentity,
   Locale,
   SessionInfo,
   TourProgress,
+  CreateRequestInput,
+  Page,
+  RequestSummary,
+  RequestDetail,
+  listQuerySchema,
 } from '@flowdesk/shared';
 import { apiFetch, type ApiClientError } from './api-client';
 
@@ -88,6 +95,56 @@ export function useTour(): UseQueryResult<TourProgress, ApiClientError> {
   return useQuery({
     queryKey: ['tour'],
     queryFn: () => apiFetch<TourProgress>('/demo/tour'),
+    retry: false,
+  });
+}
+
+export type ListQuery = ReturnType<typeof listQuerySchema.parse>;
+
+export function useRequestList(
+  query: ListQuery,
+): UseInfiniteQueryResult<Page<RequestSummary>, ApiClientError> {
+  return useInfiniteQuery<
+    Page<RequestSummary>,
+    ApiClientError,
+    Page<RequestSummary>,
+    readonly unknown[],
+    string | null
+  >({
+    queryKey: ['requests', 'list', query],
+    initialPageParam: query.cursor ?? null,
+    queryFn: ({ pageParam }) => {
+      const params = new URLSearchParams({ view: query.view });
+      if (query.status) params.set('status', query.status);
+      if (query.q) params.set('q', query.q);
+      if (pageParam) params.set('cursor', pageParam);
+      return apiFetch<Page<RequestSummary>>(`/requests?${params.toString()}`);
+    },
+    getNextPageParam: (page) => page.nextCursor ?? undefined,
+    // The public interface exposes accumulated items; TanStack retains each page.
+    select: (data) => ({
+      items: data.pages.flatMap((page) => page.items),
+      nextCursor: data.pages.at(-1)?.nextCursor ?? null,
+    }),
+    retry: false,
+  });
+}
+
+export function useCreateRequest(): UseMutationResult<
+  RequestDetail,
+  ApiClientError,
+  CreateRequestInput
+> {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (input: CreateRequestInput) =>
+      apiFetch<RequestDetail>('/requests', { method: 'POST', body: input }),
+    onSuccess: async () => {
+      await Promise.all([
+        client.invalidateQueries({ queryKey: ['requests'] }),
+        client.invalidateQueries({ queryKey: ['tour'] }),
+      ]);
+    },
     retry: false,
   });
 }

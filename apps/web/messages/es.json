@@ -100,6 +100,56 @@
       "9": "Vuelve al empleado para consultar el estado final y el historial."
     }
   },
+  "statuses": {
+    "pending_approval": "Pendiente de aprobación",
+    "rejected": "Rechazada",
+    "approved": "Aprobada · en cola de TI",
+    "in_progress": "En ejecución",
+    "completed": "Completada"
+  },
+  "accessLevels": {
+    "read": "Lectura",
+    "edit": "Edición",
+    "admin": "Administración",
+    "other": "Otro"
+  },
+  "requests": {
+    "new": "Nueva solicitud",
+    "detailTitle": "Detalle de la solicitud",
+    "back": "Volver a mis solicitudes",
+    "emptyMine": "Aún no has creado solicitudes. Solicita acceso a una herramienta para empezar.",
+    "emptyFiltered": "No hay solicitudes con estos filtros. Prueba otro estado o búsqueda.",
+    "createFirst": "Crear una solicitud",
+    "caption": "Solicitudes de acceso a software",
+    "loadMore": "Cargar más",
+    "loadingMore": "Cargando más…",
+    "statusFilter": "Estado",
+    "allStatuses": "Todos los estados",
+    "search": "Buscar solicitudes",
+    "searchPlaceholder": "Código o nombre del software",
+    "open": "Abrir solicitud {code}",
+    "columns": {
+      "code": "Código",
+      "software": "Software",
+      "access": "Nivel de acceso",
+      "status": "Estado",
+      "date": "Creación"
+    }
+  },
+  "requestForm": {
+    "title": "Nueva solicitud de acceso a software",
+    "credentialsNotice": "No incluyas contraseñas ni credenciales.",
+    "softwareName": "Software o herramienta",
+    "accessLevel": "Nivel de acceso",
+    "accessDetail": "Detalle del rol",
+    "justification": "Justificación",
+    "justificationHint": "Explica por qué necesitas el acceso (10–1000 caracteres).",
+    "neededBy": "Fecha requerida (opcional)",
+    "comments": "Comentarios (opcional)",
+    "submit": "Enviar solicitud",
+    "submitting": "Enviando…",
+    "success": "Solicitud {code} creada."
+  },
   "validation": {
     "too_short": "Añade más detalle.",
     "too_long": "Este texto es demasiado largo.",
