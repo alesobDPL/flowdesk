@@ -11,3 +11,10 @@ node_modules/
 !.env.example
 # Playwright CLI output (may contain credentials)
 .playwright-cli/
+
+# Configuración local de Claude Code (permisos y ajustes personales)
+.claude/settings.local.json
+
+# Skills de Superpowers instaladas localmente para los agentes (contenido de terceros)
+.agents/
+skills-lock.json
