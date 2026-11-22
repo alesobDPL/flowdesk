@@ -18,12 +18,18 @@ const config: NextConfig = {
     return config;
   },
   rewrites() {
+    // Production uses Caddy unless a build explicitly opts into the API proxy.
+    const apiProxyUrl =
+      process.env.API_PROXY_URL ??
+      (process.env.NODE_ENV === 'development'
+        ? 'http://localhost:4000'
+        : undefined);
     return Promise.resolve(
-      process.env.NODE_ENV === 'development'
+      apiProxyUrl
         ? [
             {
               source: '/api/:path*',
-              destination: 'http://localhost:4000/api/:path*',
+              destination: `${apiProxyUrl}/api/:path*`,
             },
           ]
         : [],

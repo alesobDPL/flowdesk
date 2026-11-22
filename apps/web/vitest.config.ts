@@ -6,6 +6,7 @@ export default defineProject({
   test: {
     name: 'web',
     include: ['apps/web/test/**/*.test.{ts,tsx}'],
+    exclude: ['apps/web/e2e/**'],
     environment: 'jsdom',
   },
 });

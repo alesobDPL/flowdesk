@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit && pnpm -r typecheck",
     "test": "vitest run --config vitest.workspace.ts",
+    "test:e2e": "node scripts/e2e.mjs",
     "format:check": "prettier --check . --ignore-path .gitignore --ignore-path .prettierignore"
   },
   "devDependencies": {
