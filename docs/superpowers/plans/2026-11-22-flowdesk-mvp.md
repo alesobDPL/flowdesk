@@ -921,3 +921,4 @@ Esta tarea no se delega a Codex sin esa autorización. Su ejecución se planific
 - **2026-11-22: el propietario acepta E1 (tareas 1 a 3) y autoriza fusionar `feat/e1-base` en `main`.** Alcance: solo esa fusión local. No autoriza push.
 - 2026-11-22: el propietario autoriza corregir el plan tras E1. `packageManager` pasa de `pnpm@12` a `pnpm@12.21.0`, porque Corepack exige una versión completa. Se añade la instalación de Corepack (`npm install -g corepack@latest`), que Node 26 ya no incluye, en las restricciones globales, en la tarea 1, en el CI y en el README de la tarea 15.
 - **2026-11-22: el propietario acepta E2 (tareas 4 y 5) y autoriza fusionar `feat/e2-domain` en `main`.** Alcance: solo esa fusión local. No autoriza push.
+- **2026-11-22: el propietario acepta E3 (tareas 6 y 7) y autoriza fusionar `feat/e3-demo` en `main`.** Alcance: solo esa fusión local. No autoriza push.
