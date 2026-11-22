@@ -67,10 +67,12 @@ export function TourPanel() {
                     type="checkbox"
                     checked={tour.data?.[key] ?? false}
                     disabled
+                    aria-readonly="true"
+                    aria-labelledby={`${id}-step-${step}`}
                     aria-busy={tour.isFetching}
                     className="mt-1 size-4 shrink-0 accent-primary"
                   />
-                  <span>{t(`steps.${step}`)}</span>
+                  <span id={`${id}-step-${step}`}>{t(`steps.${step}`)}</span>
                 </label>
               ) : (
                 t(`steps.${step}`)

@@ -42,6 +42,22 @@ it('shows nine steps and only four checkboxes driven by server progress', async 
   const boxes = screen.getAllByRole<HTMLInputElement>('checkbox');
   expect(boxes.map((box) => box.checked)).toEqual([true, false, true, false]);
   expect(boxes.every((box) => box.disabled)).toBe(true);
+  for (const [step, checked] of [
+    ['2', true],
+    ['5', false],
+    ['7', true],
+    ['8', false],
+  ] as const) {
+    const box = screen.getByRole<HTMLInputElement>('checkbox', {
+      name: en.tour.steps[step],
+    });
+    expect(box.checked).toBe(checked);
+    expect(box.getAttribute('aria-readonly')).toBe('true');
+    const labelId = box.getAttribute('aria-labelledby');
+    expect(labelId && document.getElementById(labelId)?.textContent).toBe(
+      en.tour.steps[step],
+    );
+  }
   expect(
     screen.getByRole('checkbox', { name: en.tour.steps['5'] }),
   ).toBeDefined();
