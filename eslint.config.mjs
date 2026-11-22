@@ -1,6 +1,13 @@
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import prettier from 'eslint-config-prettier';
+import { createRequire } from 'node:module';
+import { URL } from 'node:url';
+
+const requireWeb = createRequire(
+  new URL('./apps/web/package.json', import.meta.url),
+);
+const reactHooks = requireWeb('eslint-plugin-react-hooks');
 
 export default tseslint.config(
   {
@@ -9,12 +16,13 @@ export default tseslint.config(
       '**/dist/**',
       '**/coverage/**',
       '**/drizzle/meta/**',
+      '**/.next/**',
       '**/.*/**',
     ],
   },
   js.configs.recommended,
   {
-    files: ['**/*.ts'],
+    files: ['**/*.ts', '**/*.tsx'],
     extends: [...tseslint.configs.recommendedTypeChecked],
     languageOptions: {
       parserOptions: {
@@ -22,6 +30,11 @@ export default tseslint.config(
         tsconfigRootDir: import.meta.dirname,
       },
     },
+  },
+  {
+    files: ['apps/web/**/*.{ts,tsx}'],
+    plugins: { 'react-hooks': reactHooks },
+    rules: reactHooks.configs.recommended.rules,
   },
   prettier,
 );

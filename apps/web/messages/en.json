@@ -1,0 +1,61 @@
+{
+  "common": {
+    "brand": "FlowDesk",
+    "language": "Language",
+    "english": "English",
+    "spanish": "Español",
+    "close": "Close",
+    "loading": "Loading…",
+    "skipToContent": "Skip to content",
+    "notifications": "Notifications"
+  },
+  "metadata": {
+    "title": "FlowDesk · Software access requests",
+    "description": "Request, approve and track software access in one clear workflow. Explore the FlowDesk demo."
+  },
+  "welcome": {
+    "eyebrow": "Software access, with a clear process",
+    "title": "Every request.\nA clear next step.",
+    "description": "Move software access requests out of scattered messages and into one shared workflow. Employees request, approvers decide, and IT records the work.",
+    "tryDemo": "Try the demo",
+    "continueDemo": "Continue demo",
+    "starting": "Preparing your demo…",
+    "checking": "Checking your demo…",
+    "note": "No registration. A private demo space with sample data.",
+    "flowLabel": "From request to access",
+    "requestTitle": "Request",
+    "requestDescription": "Explain the tool and access you need.",
+    "approveTitle": "Approve",
+    "approveDescription": "Give each decision a clear owner.",
+    "completeTitle": "Complete",
+    "completeDescription": "Record the work and keep its history.",
+    "footer": "One workflow. Three perspectives. Full traceability.",
+    "demoLabel": "Interactive demo"
+  },
+  "expired": {
+    "eyebrow": "Your demo space",
+    "title": "This demo has expired",
+    "description": "Demo spaces are temporary. Start a new one to explore FlowDesk again with fresh sample data.",
+    "start": "Start a new demo"
+  },
+  "errors": {
+    "VALIDATION_ERROR": "Check the highlighted fields and try again.",
+    "SESSION_REQUIRED": "Start a demo to continue.",
+    "SESSION_EXPIRED": "Your demo has expired. Start a new one to continue.",
+    "FORBIDDEN": "Your current role cannot perform this action.",
+    "NOT_FOUND": "We could not find this request in your demo.",
+    "INVALID_TRANSITION": "This request has changed. Refresh it to see the latest status.",
+    "APPROVER_NOT_CONFIGURED": "There is no approver configured for this request.",
+    "SELF_APPROVAL_CONFLICT": "You cannot approve your own request.",
+    "QUOTA_EXCEEDED": "You have reached this demo’s request limit.",
+    "RATE_LIMITED": "You have made several requests recently. Please wait a moment and try again.",
+    "DEMO_AT_CAPACITY": "All demo spaces are in use right now. Please try again in a few minutes.",
+    "INTERNAL_ERROR": "Something went wrong. Please try again in a moment."
+  },
+  "validation": {
+    "too_short": "Please add more detail.",
+    "too_long": "This text is too long.",
+    "required": "Complete this field with a valid value.",
+    "date_in_past": "Choose today or a later date."
+  }
+}

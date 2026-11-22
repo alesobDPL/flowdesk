@@ -1,0 +1,61 @@
+{
+  "common": {
+    "brand": "FlowDesk",
+    "language": "Idioma",
+    "english": "English",
+    "spanish": "Español",
+    "close": "Cerrar",
+    "loading": "Cargando…",
+    "skipToContent": "Saltar al contenido",
+    "notifications": "Notificaciones"
+  },
+  "metadata": {
+    "title": "FlowDesk · Solicitudes de acceso a software",
+    "description": "Solicita, aprueba y consulta el acceso a software en un flujo claro. Explora la demo de FlowDesk."
+  },
+  "welcome": {
+    "eyebrow": "Acceso a software con un proceso claro",
+    "title": "Cada solicitud.\nUn siguiente paso claro.",
+    "description": "Lleva las solicitudes de acceso a software de mensajes dispersos a un flujo compartido. El empleado solicita, el aprobador decide y TI registra el trabajo.",
+    "tryDemo": "Probar demo",
+    "continueDemo": "Continuar demo",
+    "starting": "Preparando tu demo…",
+    "checking": "Comprobando tu demo…",
+    "note": "Sin registro. Un espacio de demo privado con datos de ejemplo.",
+    "flowLabel": "De la solicitud al acceso",
+    "requestTitle": "Solicitar",
+    "requestDescription": "Explica qué herramienta y acceso necesitas.",
+    "approveTitle": "Aprobar",
+    "approveDescription": "Cada decisión tiene un responsable claro.",
+    "completeTitle": "Completar",
+    "completeDescription": "Registra el trabajo y conserva su historial.",
+    "footer": "Un flujo. Tres perspectivas. Trazabilidad completa.",
+    "demoLabel": "Demo interactiva"
+  },
+  "expired": {
+    "eyebrow": "Tu espacio de demo",
+    "title": "Esta demo ha caducado",
+    "description": "Los espacios de demo son temporales. Empieza uno nuevo para explorar FlowDesk otra vez con datos de ejemplo renovados.",
+    "start": "Empezar una nueva demo"
+  },
+  "errors": {
+    "VALIDATION_ERROR": "Revisa los campos indicados y vuelve a intentarlo.",
+    "SESSION_REQUIRED": "Inicia una demo para continuar.",
+    "SESSION_EXPIRED": "Tu demo ha caducado. Inicia una nueva para continuar.",
+    "FORBIDDEN": "Tu rol actual no permite realizar esta acción.",
+    "NOT_FOUND": "No encontramos esta solicitud en tu demo.",
+    "INVALID_TRANSITION": "Esta solicitud ha cambiado. Actualízala para ver su estado actual.",
+    "APPROVER_NOT_CONFIGURED": "No hay un aprobador configurado para esta solicitud.",
+    "SELF_APPROVAL_CONFLICT": "No puedes aprobar tu propia solicitud.",
+    "QUOTA_EXCEEDED": "Has alcanzado el límite de solicitudes de esta demo.",
+    "RATE_LIMITED": "Has realizado varias peticiones recientemente. Espera un momento y vuelve a intentarlo.",
+    "DEMO_AT_CAPACITY": "Todos los espacios de demo están en uso. Vuelve a intentarlo en unos minutos.",
+    "INTERNAL_ERROR": "Algo salió mal. Vuelve a intentarlo en un momento."
+  },
+  "validation": {
+    "too_short": "Añade más detalle.",
+    "too_long": "Este texto es demasiado largo.",
+    "required": "Completa este campo con un valor válido.",
+    "date_in_past": "Elige hoy o una fecha posterior."
+  }
+}

@@ -7,3 +7,5 @@ allowBuilds:
   cpu-features: false
   protobufjs: false
   ssh2: false
+  '@parcel/watcher': false
+  '@swc/core': false

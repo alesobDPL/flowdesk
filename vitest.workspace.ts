@@ -1,9 +1,11 @@
 import { defineConfig } from 'vitest/config';
+import web from './apps/web/vitest.config.js';
 
 export default defineConfig({
   root: import.meta.dirname,
   test: {
     projects: [
+      web,
       {
         test: {
           name: 'shared',

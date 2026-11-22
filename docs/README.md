@@ -15,12 +15,12 @@ Las convenciones de cada carpeta están en [specs](superpowers/specs/README.md) 
 
 ## Pruebas
 
-Desde la raíz, `pnpm test` ejecuta los proyectos `shared`, `api-unit` y `api-integration`. Solo `api-integration` necesita Docker para iniciar PostgreSQL mediante Testcontainers. `pnpm --filter @flowdesk/api test` ejecuta ambos proyectos de la API.
+Desde la raíz, `pnpm test` ejecuta los proyectos `shared`, `api-unit`, `api-integration` y `web`. Solo `api-integration` necesita Docker para iniciar PostgreSQL mediante Testcontainers. `pnpm --filter @flowdesk/api test` ejecuta ambos proyectos de la API y `pnpm --filter @flowdesk/web test` ejecuta las pruebas web en jsdom.
 
-Para ejecutar las pruebas compartidas y unitarias de la API, sin Docker:
+Para ejecutar las pruebas compartidas, unitarias de la API y web, sin Docker:
 
 ```sh
-pnpm exec vitest run --config vitest.workspace.ts --project shared --project api-unit
+pnpm exec vitest run --config vitest.workspace.ts --project shared --project api-unit --project web
 ```
 
 En PowerShell, si la política de ejecución bloquea `pnpm.ps1`, se puede usar `pnpm.cmd` con los mismos argumentos.
@@ -82,3 +82,11 @@ pnpm exec vitest run --config vitest.workspace.ts --project api-integration rout
 ```
 
 Incluyen el recorrido de nueve pasos, permisos, identidad desactualizada, cuota, concurrencia y aislamiento. La prueba de asignación concurrente inserta un segundo usuario con rol `it_agent` y sesión propia; en esa fixture reutiliza el alias de demo `employee`, liberado para respetar su unicidad por espacio. Las pruebas unitarias de los adaptadores HTTP, validaciones y límites también se ejecutan sin Docker.
+
+## Base web (Task 10)
+
+`pnpm --filter @flowdesk/web dev` inicia Next.js en el puerto 3000; en desarrollo, `/api/*` se reenvía a la API local del puerto 4000. Para los comandos de Next.js se usa `NEXT_TELEMETRY_DISABLED=1` (en PowerShell: `$env:NEXT_TELEMETRY_DISABLED = '1'`). Desarrollo y build usan Webpack con `extensionAlias` para resolver los imports ESM `.js` de `@flowdesk/shared` a su fuente TypeScript. El build transpila ese paquete y usa fuentes del sistema.
+
+La raíz redirige a `/es` si `Accept-Language` empieza por `es`, y a `/en` en los demás casos. La bienvenida consulta la sesión y permite continuarla o crear una demo con el idioma de entrada. La ruta interna `/demo-expired` se muestra como `/es/demo-caducada` o `/en/demo-expired`. El selector cambia el idioma sin mutar la sesión. Las páginas de `/app` se implementan en las tareas 11–13; todavía pueden devolver 404.
+
+Los mensajes de ambos idiomas comparten claves verificadas por pruebas, incluidos los errores de API y los códigos de validación. El cliente envía JSON y credenciales del mismo origen; el navegador añade `Origin` a las mutaciones. Las pruebas de bienvenida cubren reanudación, creación, doble envío, capacidad, límite de peticiones y nueva demo tras caducar. La comprobación manual con la API y un navegador queda a cargo del revisor.
