@@ -452,6 +452,7 @@ Las acciones son rutas explícitas en lugar de un `PATCH` genérico del estado. 
 | Creación de espacios por IP | 10 por hora | Frena la creación automatizada. |
 | Espacios activos en total | 500 | Tope de seguridad para el VPS; por encima, `503 DEMO_AT_CAPACITY` con un mensaje amable. |
 | Peticiones por sesión | 120 por minuto, mutaciones incluidas | Frena scripts sin molestar a una persona. |
+| Peticiones por IP | 300 por minuto, todas las rutas incluidas | Frena la rotación de cookies inventadas antes de consultar la sesión. |
 | Tamaño máximo del cuerpo | 16 KB | Ningún formulario se acerca. |
 
 Todos son configurables por variables de entorno. Se revisarán con mediciones reales en el VPS. El límite por IP se mantiene en memoria del proceso (`@fastify/rate-limit`), basta con una instancia de la API y no persiste las IP. La API confía en `X-Forwarded-For` solo cuando la conexión viene del proxy. Caddy corre en el host y la API en un contenedor, así que la API no ve loopback como origen, sino la puerta de enlace de la red Docker. Por eso `trustProxy` recibe la subred fija de esa red, definida en `compose.yaml` y pasada por la variable `TRUST_PROXY_CIDR`. Una prueba de integración comprueba dos cosas: desde la red de confianza, dos IP distintas en `X-Forwarded-For` tienen cubos de límite separados; desde cualquier otra procedencia, la cabecera se ignora.
@@ -549,3 +550,4 @@ Nombres ficticios y textos de la interfaz; organización interna de carpetas den
 - 2026-11-22: el propietario decide que la interfaz y el README público estén en español e inglés.
 - **2026-11-22: el propietario aprueba el documento completo**, incluidas las decisiones de la sección 16 tal como están redactadas. Alcance: el diseño del MVP. No aprueba el plan ni autoriza implementar, desplegar ni actuar en el VPS. El dominio de la demo sigue pendiente.
 - 2026-11-22: el propietario autoriza corregir una contradicción de la sección 7. El diagrama ponía `ON DELETE CASCADE` en la clave de `request_events` hacia `requests`, y las decisiones clave pedían `NO ACTION` en las claves compuestas. Prevalece `NO ACTION`, que es lo implementado en E1. Los eventos se siguen borrando en cascada desde `demo_spaces`.
+- 2026-11-22: durante la revisión de E4, el propietario aprueba añadir a 9.2 un límite de 300 peticiones por minuto por IP, además del límite por sesión.

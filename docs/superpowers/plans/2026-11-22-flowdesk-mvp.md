@@ -32,6 +32,7 @@ Fecha: 2026-11-22. Estado: **Aprobado por el propietario el 2026-11-22.** Autori
   | `DEMO_SPACES_PER_IP_HOUR` | 10 |
   | `DEMO_MAX_ACTIVE_SPACES` | 500 |
   | `RATE_LIMIT_PER_MIN` | 120 |
+  | `RATE_LIMIT_PER_IP_MIN` | 300 |
   | `BODY_LIMIT_BYTES` | 16384 |
   | `CLEANUP_INTERVAL_MIN` | 10 |
   | `CLEANUP_GRACE_MIN` | 15 |
@@ -408,7 +409,7 @@ Rutas internas en inglés (`/app/requests`). next-intl `pathnames` las localiza:
   // config.ts — valida process.env con Zod; valores por defecto de Global Constraints
   export type Config = { nodeEnv: 'development'|'test'|'production'; port: number; databaseUrl: string; appOrigin: string;
     trustProxyCidr: string | null; logLevel: string; demo: { spaceTtlMin: number; idleMin: number; maxRequests: number;
-    spacesPerIpHour: number; maxActiveSpaces: number; rateLimitPerMin: number; cleanupIntervalMin: number;
+    spacesPerIpHour: number; maxActiveSpaces: number; rateLimitPerMin: number; ipRateLimitPerMin: number; cleanupIntervalMin: number;
     cleanupGraceMin: number; cleanupBatch: number }; bodyLimitBytes: number };
   export function loadConfig(env: NodeJS.ProcessEnv): Config;
   // demo/session/token.ts
@@ -537,6 +538,7 @@ Rutas internas en inglés (`/app/requests`). next-intl `pathnames` las localiza:
 - **Registro en `buildApp`.**
   - `@fastify/cookie`.
   - `@fastify/rate-limit` global: `rateLimitPerMin` por minuto, con clave = hash de la cookie si existe y, si no, la IP.
+  - Además, una única instancia de `app.createRateLimit` con `ipRateLimitPerMin` por minuto y clave `ip:${request.ip}`, aplicada en un hook `onRequest` de la aplicación a todas las rutas, incluidas salud y rutas desconocidas. Respeta `trustProxy` y rechaza con `429 RATE_LIMITED` antes de consultar la sesión.
   - `bodyLimit = bodyLimitBytes`.
   - `trustProxy = config.trustProxyCidr ?? false`.
   - Prefijo `/api/v1`.
@@ -559,6 +561,7 @@ Rutas internas en inglés (`/app/requests`). next-intl `pathnames` las localiza:
   - `mutation without Origin → 403`; `with foreign Origin → 403`; `without JSON content type → 403`.
   - `body over 16 KB → 413`.
   - `rate limit → 429 RATE_LIMITED with error body`: con `rateLimitPerMin=3`, la 4.ª petición.
+  - `IP rate limit`: con `ipRateLimitPerMin=3` y límite de sesión alto, la cuarta petición desde la misma IP con una cookie aleatoria diferente devuelve `429 RATE_LIMITED`; dos IP reenviadas por un proxy de confianza tienen cubos separados.
   - `unknown error → 500 INTERNAL_ERROR without stack`.
   - `trustProxy`: con `trustProxyCidr='127.0.0.1/32'`, dos `X-Forwarded-For` distintos tienen cubos de límite separados para `POST /demo/spaces`. Sin `trustProxyCidr`, la cabecera se ignora y comparten cubo.
 - [ ] **Step 2: Ejecutarlas.** `pnpm --filter @flowdesk/api test -- http-foundation`. Esperado: FAIL.
@@ -589,7 +592,7 @@ Rutas internas en inglés (`/app/requests`). next-intl `pathnames` las localiza:
   | `GET /demo/tour` | `TourProgress` |
 
   Los detalles:
-  - **`POST /demo/spaces`.** Con una sesión `ok` responde `200` con esa sesión y no crea nada. Tiene un límite propio de `spacesPerIpHour` por hora y por IP.
+  - **`POST /demo/spaces`.** Con una sesión `ok` responde `200` con esa sesión y no crea nada ni consume el cupo horario de espacios. Al crear, aplica el límite propio de `spacesPerIpHour` por hora y por IP después de comprobar la reanudación.
   - **`POST /demo/spaces/reset`.** Exige sesión y comparte el límite por IP.
   - **Cookie.** `Max-Age` hasta `hardExpiresAt`.
   - **`:id`.** Si no es un UUID → `404 NOT_FOUND`, no `400`.
@@ -603,6 +606,7 @@ Rutas internas en inglés (`/app/requests`). next-intl `pathnames` las localiza:
     - `switch identity to approver`.
     - `switch identity with unknown value → 400`.
     - `11th space creation from same IP within an hour → 429`.
+    - Con `spacesPerIpHour=1`, crear devuelve `201`, reanudar dos veces con la misma cookie devuelve `200, 200` y otra creación sin cookie desde la misma IP devuelve `429`.
   - `routes-requests.test.ts`:
     - `full tour through HTTP`: los 9 pasos del recorrido con cambios de identidad; estado final `completed`; el historial tiene 4 eventos.
     - `permission matrix`, como tabla parametrizada:
@@ -922,3 +926,4 @@ Esta tarea no se delega a Codex sin esa autorización. Su ejecución se planific
 - 2026-11-22: el propietario autoriza corregir el plan tras E1. `packageManager` pasa de `pnpm@12` a `pnpm@12.21.0`, porque Corepack exige una versión completa. Se añade la instalación de Corepack (`npm install -g corepack@latest`), que Node 26 ya no incluye, en las restricciones globales, en la tarea 1, en el CI y en el README de la tarea 15.
 - **2026-11-22: el propietario acepta E2 (tareas 4 y 5) y autoriza fusionar `feat/e2-domain` en `main`.** Alcance: solo esa fusión local. No autoriza push.
 - **2026-11-22: el propietario acepta E3 (tareas 6 y 7) y autoriza fusionar `feat/e3-demo` en `main`.** Alcance: solo esa fusión local. No autoriza push.
+- 2026-11-22: durante la revisión de E4, el propietario aprueba añadir un límite global por IP (`RATE_LIMIT_PER_IP_MIN`, 300 por minuto por defecto) además del límite por sesión. Cuenta todas las rutas antes de resolver la sesión, para que rotar cookies inventadas no evite el límite. Se ajusta también que reanudar una sesión vigente no consuma el cupo horario de creación de espacios. Se actualizan las restricciones globales y las tareas 6, 8 y 9.
