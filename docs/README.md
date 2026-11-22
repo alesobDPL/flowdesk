@@ -37,4 +37,16 @@ La configuración de la API se valida con Zod en [`config.ts`](../apps/api/src/c
 
 [`DemoSpaceService`](../apps/api/src/demo/spaces/space.service.ts) crea cada espacio en una transacción con tres identidades, cinco solicitudes de ejemplo en español o inglés y una sesión de empleado. Los ejemplos no consumen cuota; el contador de códigos empieza en cinco. La reserva de capacidad usa un bloqueo asesor transaccional para serializar las creaciones concurrentes.
 
-[`SessionService`](../apps/api/src/demo/session/session.service.ts) resuelve el token por su hash SHA-256 y construye el actor con los usuarios y roles del espacio. La caducidad combina el límite absoluto con la ventana de inactividad; la actividad se escribe como máximo una vez por minuto. Ambos servicios reciben un reloj inyectable. Las cuotas, la limpieza programada y el progreso del recorrido corresponden a Task 7.
+[`SessionService`](../apps/api/src/demo/session/session.service.ts) resuelve el token por su hash SHA-256 y construye el actor con los usuarios y roles del espacio. La caducidad combina el límite absoluto con la ventana de inactividad; la actividad se escribe como máximo una vez por minuto. Ambos servicios reciben un reloj inyectable.
+
+[`createDemoScopeHooks`](../apps/api/src/demo/limits/scope-hooks.ts) reserva la cuota y asigna el código de cada solicitud dentro de la transacción de `RequestService`. Las actualizaciones condicionales impiden superar la cuota con creaciones concurrentes. Los cinco ejemplos no consumen cuota y las nuevas solicitudes empiezan en `FD-0006`.
+
+[`runCleanup`](../apps/api/src/demo/cleanup/cleanup.ts) borra los espacios caducados en lotes, respetando el margen de limpieza configurado. Usa un bloqueo asesor transaccional distinto del de creación; toda la ejecución ocupa una misma conexión y el bloqueo se libera al confirmar o revertir. `startCleanupScheduler` registra el recuento, si la ejecución se omitió y la duración en milisegundos; registra errores sin detener la programación. Su función de parada cancela el temporizador.
+
+[`getTourProgress`](../apps/api/src/demo/tour/tour.service.ts) calcula los cuatro pasos del recorrido a partir de las solicitudes del visitante y sus eventos. Los ejemplos y los datos de otros espacios quedan excluidos; liberar una solicitud no borra el paso de asignación ya realizado.
+
+Con Docker disponible, las pruebas de integración de Task 7 se ejecutan con:
+
+```sh
+pnpm exec vitest run --config vitest.workspace.ts --project api-integration demo-limits cleanup tour
+```
