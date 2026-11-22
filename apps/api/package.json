@@ -1,0 +1,21 @@
+{
+  "name": "@flowdesk/api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run --config ../../vitest.workspace.ts --project api",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate"
+  },
+  "dependencies": {
+    "@flowdesk/shared": "workspace:*",
+    "drizzle-orm": "~0.45.4",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@testcontainers/postgresql": "^12.2.2",
+    "@types/pg": "^8.23.1",
+    "drizzle-kit": "~0.31.11",
+    "testcontainers": "^12.2.2"
+  }
+}
