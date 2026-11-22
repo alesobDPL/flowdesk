@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import type { ApiErrorBody } from '@flowdesk/shared';
 import { eq } from 'drizzle-orm';
 import type { FastifyInstance, InjectOptions } from 'fastify';
@@ -128,6 +129,59 @@ it('rate limit returns 429 RATE_LIMITED with an error body', async () => {
     code: 'RATE_LIMITED',
     details: {},
   });
+});
+
+it('global IP limit rejects the fourth request with a different made-up cookie', async () => {
+  await app.close();
+  app = await buildApp({
+    config: {
+      ...config,
+      demo: { ...config.demo, rateLimitPerMin: 100, ipRateLimitPerMin: 3 },
+    },
+    db: getTestDb(),
+  });
+  for (let i = 0; i < 3; i++) {
+    const response = await app.inject({
+      url: '/api/v1/session',
+      headers: { cookie: `fd_session=${randomUUID()}` },
+    });
+    expect(response.statusCode).toBe(401);
+  }
+  const response = await app.inject({
+    url: '/api/v1/session',
+    headers: { cookie: `fd_session=${randomUUID()}` },
+  });
+  expect(response.statusCode).toBe(429);
+  expect(response.json<ApiErrorBody>().error).toMatchObject({
+    code: 'RATE_LIMITED',
+    details: {},
+  });
+});
+
+it('trusted forwarded IPs have separate global IP buckets', async () => {
+  await app.close();
+  app = await buildApp({
+    config: {
+      ...config,
+      trustProxyCidr: '127.0.0.1/32',
+      demo: { ...config.demo, rateLimitPerMin: 100, ipRateLimitPerMin: 3 },
+    },
+    db: getTestDb(),
+  });
+  const request = (ip: string) =>
+    app.inject({
+      url: '/api/v1/session',
+      remoteAddress: '127.0.0.1',
+      headers: { cookie: `fd_session=${randomUUID()}`, 'x-forwarded-for': ip },
+    });
+  for (let i = 0; i < 3; i++)
+    expect((await request('198.51.100.1')).statusCode).toBe(401);
+  expect((await request('198.51.100.1')).statusCode).toBe(429);
+  for (let i = 0; i < 3; i++)
+    expect((await request('198.51.100.2')).statusCode).toBe(401);
+  const response = await request('198.51.100.2');
+  expect(response.statusCode).toBe(429);
+  expect(response.json<ApiErrorBody>().error.code).toBe('RATE_LIMITED');
 });
 
 it('unknown error returns 500 INTERNAL_ERROR without stack', async () => {

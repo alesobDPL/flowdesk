@@ -53,7 +53,9 @@ pnpm exec vitest run --config vitest.workspace.ts --project api-integration demo
 
 ## Base HTTP (Task 8)
 
-[`buildApp`](../apps/api/src/http/app.ts) recibe la configuración, la base de datos y un reloj opcional. Registra cookies, límites globales por hash de sesión o IP, control de origen para mutaciones, resolución de sesión y errores JSON uniformes. Los logs JSON omiten las cabeceras y truncan las IP a IPv4 /24 o IPv6 /48. `GET /api/v1/health` ejecuta `SELECT 1`; `GET /api/v1/session` tiene un manejador mínimo que Task 9 completará.
+[`buildApp`](../apps/api/src/http/app.ts) recibe la configuración, la base de datos y un reloj opcional. Registra cookies, límites globales por hash de sesión o IP, control de origen para mutaciones, resolución de sesión y errores JSON uniformes. Los logs JSON omiten las cabeceras y truncan las IP a IPv4 /24 o IPv6 /48. `GET /api/v1/health` ejecuta `SELECT 1`; `GET /api/v1/session` devuelve `SessionInfo`.
+
+Además del límite por sesión (`RATE_LIMIT_PER_MIN`, 120 por defecto), un limitador global independiente por IP aplica `RATE_LIMIT_PER_IP_MIN` (300 por defecto) antes de resolver sesiones. Incluye salud y rutas desconocidas; rotar cookies falsas no reinicia ese cupo. Ambos límites por minuto respetan `TRUST_PROXY_CIDR` y devuelven el formato estándar `429 RATE_LIMITED`.
 
 Con las variables de entorno configuradas, `pnpm --filter @flowdesk/api dev` inicia el modo de desarrollo y `pnpm --filter @flowdesk/api start` inicia la API. Ambos usan `tsx`; el proceso escucha en `0.0.0.0:PORT`. `SIGTERM` y `SIGINT` cierran la aplicación, detienen el programador de limpieza y cierran el pool. `pnpm --filter @flowdesk/api migrate` ejecuta las migraciones; no se ejecutan al recibir peticiones.
 
@@ -63,4 +65,20 @@ Las pruebas unitarias de HTTP se ejecutan sin Docker con el comando anterior. Co
 pnpm exec vitest run --config vitest.workspace.ts --project api-integration http-foundation
 ```
 
-Las pruebas de origen y `trustProxy` usan `POST /api/v1/test-mutation`, registrada solo dentro de las pruebas. El helper [`newVisitor`](../apps/api/test/helpers/http.ts) está preparado para la ruta de creación y la cookie que implementará Task 9.
+Las pruebas de origen y `trustProxy` usan `POST /api/v1/test-mutation`, registrada solo dentro de las pruebas. El helper [`newVisitor`](../apps/api/test/helpers/http.ts) crea un visitante y añade su cookie, origen y tipo JSON a las peticiones siguientes.
+
+## Rutas HTTP (Task 9)
+
+Las rutas de [`demo`](../apps/api/src/http/routes/demo.ts), [`sesión`](../apps/api/src/http/routes/session.ts), [`solicitudes`](../apps/api/src/http/routes/requests.ts) y [`recorrido`](../apps/api/src/http/routes/tour.ts) usan el prefijo `/api/v1`. Solo salud y creación de espacios permiten peticiones sin sesión. Las rutas protegidas resuelven la identidad actual del servidor en cada petición; los identificadores o roles enviados por el cliente no construyen el actor.
+
+Crear un espacio con una sesión vigente devuelve `200 SessionInfo` sin crear otro espacio ni renovar la cookie; crear uno nuevo o reiniciar devuelve `201 SessionInfo` y establece `fd_session` con los atributos de la configuración. Las creaciones y los reinicios comparten una sola instancia del limitador por IP y hora, además de los límites globales por minuto. La reanudación no consume el cupo horario de creación: el límite de creación se evalúa después de comprobar si la sesión está vigente. Se usa un limitador compartido porque la configuración por ruta del plugin crea almacenes independientes incluso con la misma clave.
+
+Los cuerpos y filtros se validan con los esquemas compartidos; la fecha de creación se evalúa con el reloj inyectado en `America/Santiago`. Un identificador que no sea UUID produce `404 NOT_FOUND`. Un cursor inválido produce `400 VALIDATION_ERROR` en `details.fields.cursor` antes de llegar al servicio o a SQL.
+
+Con Docker disponible, las pruebas de Task 9 se ejecutan con:
+
+```sh
+pnpm exec vitest run --config vitest.workspace.ts --project api-integration routes-
+```
+
+Incluyen el recorrido de nueve pasos, permisos, identidad desactualizada, cuota, concurrencia y aislamiento. La prueba de asignación concurrente inserta un segundo usuario con rol `it_agent` y sesión propia; en esa fixture reutiliza el alias de demo `employee`, liberado para respetar su unicidad por espacio. Las pruebas unitarias de los adaptadores HTTP, validaciones y límites también se ejecutan sin Docker.

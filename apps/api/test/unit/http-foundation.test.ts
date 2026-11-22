@@ -1,5 +1,7 @@
+import { randomUUID } from 'node:crypto';
 import { buildCreateRequestSchema, type ApiErrorBody } from '@flowdesk/shared';
-import type { FastifyInstance, InjectOptions } from 'fastify';
+import cookiePlugin from '@fastify/cookie';
+import Fastify, { type FastifyInstance, type InjectOptions } from 'fastify';
 import { afterEach, expect, it, vi } from 'vitest';
 import { loadConfig, type Config } from '../../src/config.js';
 import {
@@ -321,11 +323,99 @@ it('unknown routes use the standard 404 body', async () => {
   expect(errorBody(response).error.code).toBe('NOT_FOUND');
 });
 
+it.each([
+  ['/api/v1/session', 401],
+  ['/api/v1/health', 200],
+  ['/api/v1/unknown', 404],
+] as const)(
+  'IP limit cannot be bypassed by rotating cookies on %s',
+  async (url, expected) => {
+    const resolve = vi
+      .spyOn(SessionService.prototype, 'resolve')
+      .mockResolvedValue({ status: 'missing' });
+    const app = await appFor({
+      ...base,
+      demo: { ...base.demo, rateLimitPerMin: 100, ipRateLimitPerMin: 3 },
+    });
+    for (let i = 0; i < 3; i++) {
+      const response = await app.inject({
+        url,
+        headers: { cookie: `fd_session=${randomUUID()}` },
+      });
+      expect(response.statusCode).toBe(expected);
+    }
+    const response = await app.inject({
+      url,
+      headers: { cookie: `fd_session=${randomUUID()}` },
+    });
+    expect(response.statusCode).toBe(429);
+    expect(errorBody(response).error.code).toBe('RATE_LIMITED');
+    if (url.endsWith('/session')) expect(resolve).toHaveBeenCalledTimes(3);
+  },
+);
+
+it('one IP bucket is shared across health, unknown and protected routes', async () => {
+  const resolve = vi
+    .spyOn(SessionService.prototype, 'resolve')
+    .mockResolvedValue({ status: 'missing' });
+  const app = await appFor({
+    ...base,
+    demo: { ...base.demo, rateLimitPerMin: 100, ipRateLimitPerMin: 3 },
+  });
+  for (const url of ['/api/v1/health', '/unknown', '/api/v1/session']) {
+    await app.inject({
+      url,
+      headers: { cookie: `fd_session=${randomUUID()}` },
+    });
+  }
+  const response = await app.inject({
+    url: '/api/v1/session',
+    headers: { cookie: `fd_session=${randomUUID()}` },
+  });
+  expect(response.statusCode).toBe(429);
+  expect(errorBody(response).error.code).toBe('RATE_LIMITED');
+  expect(resolve).toHaveBeenCalledOnce();
+});
+
+it.each([
+  ['127.0.0.1/32', '127.0.0.1', 401],
+  [null, '127.0.0.1', 429],
+  ['127.0.0.1/32', '192.0.2.10', 429],
+] as const)(
+  'IP limiter uses trustProxy %s from %s',
+  async (trustProxyCidr, remoteAddress, expected) => {
+    vi.spyOn(SessionService.prototype, 'resolve').mockResolvedValue({
+      status: 'missing',
+    });
+    const app = await appFor({
+      ...base,
+      trustProxyCidr,
+      demo: { ...base.demo, rateLimitPerMin: 100, ipRateLimitPerMin: 3 },
+    });
+    const request = (ip: string) =>
+      app.inject({
+        url: '/api/v1/session',
+        remoteAddress,
+        headers: {
+          cookie: `fd_session=${randomUUID()}`,
+          'x-forwarded-for': ip,
+        },
+      });
+    for (let i = 0; i < 3; i++)
+      expect((await request('198.51.100.1')).statusCode).toBe(401);
+    expect((await request('198.51.100.1')).statusCode).toBe(429);
+    expect((await request('198.51.100.2')).statusCode).toBe(expected);
+  },
+);
+
 it('visitor helper passes locale, configured origin, cookie and default POST/PUT bodies', async () => {
   const config = { ...base, appOrigin: 'https://flowdesk.example' };
-  const app = await appFor(config);
+  const app = Fastify();
+  app.decorate('config', config);
+  await app.register(cookiePlugin);
+  apps.push(app);
   const created: unknown[] = [];
-  // Test fixture only: Task 8 does not issue session cookies in production.
+  // Isolated fixture for the helper, independent of the application's demo route.
   app.post('/api/v1/demo/spaces', (request, reply) => {
     created.push(request.body);
     return reply.code(201).setCookie('fd_session', 'visitor-token').send({});

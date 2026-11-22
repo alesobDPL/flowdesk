@@ -5,7 +5,6 @@ import type {
   LightMyRequestResponse,
 } from 'fastify';
 
-// The creation route and its cookie attributes are implemented by Task 9.
 export async function newVisitor(
   app: FastifyInstance,
   locale: Locale = 'es',

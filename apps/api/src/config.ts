@@ -14,6 +14,7 @@ export type Config = {
     spacesPerIpHour: number;
     maxActiveSpaces: number;
     rateLimitPerMin: number;
+    ipRateLimitPerMin: number;
     cleanupIntervalMin: number;
     cleanupGraceMin: number;
     cleanupBatch: number;
@@ -37,6 +38,7 @@ const envSchema = z.object({
   DEMO_SPACES_PER_IP_HOUR: positiveInteger.default(10),
   DEMO_MAX_ACTIVE_SPACES: positiveInteger.default(500),
   RATE_LIMIT_PER_MIN: positiveInteger.default(120),
+  RATE_LIMIT_PER_IP_MIN: positiveInteger.default(300),
   BODY_LIMIT_BYTES: positiveInteger.default(16384),
   CLEANUP_INTERVAL_MIN: positiveInteger.default(10),
   CLEANUP_GRACE_MIN: positiveInteger.default(15),
@@ -59,6 +61,7 @@ export function loadConfig(env: NodeJS.ProcessEnv): Config {
       spacesPerIpHour: parsed.DEMO_SPACES_PER_IP_HOUR,
       maxActiveSpaces: parsed.DEMO_MAX_ACTIVE_SPACES,
       rateLimitPerMin: parsed.RATE_LIMIT_PER_MIN,
+      ipRateLimitPerMin: parsed.RATE_LIMIT_PER_IP_MIN,
       cleanupIntervalMin: parsed.CLEANUP_INTERVAL_MIN,
       cleanupGraceMin: parsed.CLEANUP_GRACE_MIN,
       cleanupBatch: parsed.CLEANUP_BATCH,
