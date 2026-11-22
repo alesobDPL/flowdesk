@@ -50,3 +50,17 @@ Con Docker disponible, las pruebas de integración de Task 7 se ejecutan con:
 ```sh
 pnpm exec vitest run --config vitest.workspace.ts --project api-integration demo-limits cleanup tour
 ```
+
+## Base HTTP (Task 8)
+
+[`buildApp`](../apps/api/src/http/app.ts) recibe la configuración, la base de datos y un reloj opcional. Registra cookies, límites globales por hash de sesión o IP, control de origen para mutaciones, resolución de sesión y errores JSON uniformes. Los logs JSON omiten las cabeceras y truncan las IP a IPv4 /24 o IPv6 /48. `GET /api/v1/health` ejecuta `SELECT 1`; `GET /api/v1/session` tiene un manejador mínimo que Task 9 completará.
+
+Con las variables de entorno configuradas, `pnpm --filter @flowdesk/api dev` inicia el modo de desarrollo y `pnpm --filter @flowdesk/api start` inicia la API. Ambos usan `tsx`; el proceso escucha en `0.0.0.0:PORT`. `SIGTERM` y `SIGINT` cierran la aplicación, detienen el programador de limpieza y cierran el pool. `pnpm --filter @flowdesk/api migrate` ejecuta las migraciones; no se ejecutan al recibir peticiones.
+
+Las pruebas unitarias de HTTP se ejecutan sin Docker con el comando anterior. Con Docker disponible:
+
+```sh
+pnpm exec vitest run --config vitest.workspace.ts --project api-integration http-foundation
+```
+
+Las pruebas de origen y `trustProxy` usan `POST /api/v1/test-mutation`, registrada solo dentro de las pruebas. El helper [`newVisitor`](../apps/api/test/helpers/http.ts) está preparado para la ruta de creación y la cookie que implementará Task 9.
