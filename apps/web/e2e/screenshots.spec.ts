@@ -11,6 +11,8 @@ import {
   test,
 } from './fixtures';
 
+test.use({ reducedMotion: 'reduce' });
+
 const assets = new URL('../../../docs/assets/', import.meta.url);
 
 async function capture(page: Page, filename: string) {

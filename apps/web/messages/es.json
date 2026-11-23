@@ -30,7 +30,29 @@
     "completeTitle": "Completar",
     "completeDescription": "Registra el trabajo y conserva su historial.",
     "footer": "Un flujo. Tres perspectivas. Trazabilidad completa.",
-    "demoLabel": "Demo interactiva"
+    "demoLabel": "Demo interactiva",
+    "replay": "Ver de nuevo",
+    "sampleRequest": "FD-0005 · Notion · Edición",
+    "perspectivesTitle": "Tres perspectivas",
+    "perspectives": {
+      "employee": {
+        "eyebrow": "Empleada",
+        "title": "Pide el acceso que necesitas",
+        "description": "Envía tu solicitud y consulta su progreso en un solo lugar."
+      },
+      "approver": {
+        "eyebrow": "Aprobador",
+        "title": "Decide con contexto",
+        "description": "Revisa cada solicitud y deja constancia de tu decisión."
+      },
+      "it": {
+        "eyebrow": "TI",
+        "title": "Completa el flujo",
+        "description": "Gestiona los accesos aprobados y registra el trabajo realizado."
+      }
+    },
+    "sourceLink": "Código en GitHub",
+    "opensInNewTab": "Se abre en otra pestaña"
   },
   "expired": {
     "eyebrow": "Tu espacio de demo",

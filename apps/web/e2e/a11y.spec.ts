@@ -9,6 +9,8 @@ import {
   test,
 } from './fixtures';
 
+test.use({ reducedMotion: 'reduce' });
+
 async function checkAccessibility(page: Page) {
   const results = await new AxeBuilder({ page }).analyze();
   expect(

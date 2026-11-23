@@ -1,8 +1,8 @@
 'use client';
 
-import { LayersIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { LanguageSelector } from './language-selector';
+import { BrandMark } from './brand-mark';
 
 export function PublicHeader({ href }: { href: '/' | '/demo-expired' }) {
   const t = useTranslations('common');
@@ -14,14 +14,14 @@ export function PublicHeader({ href }: { href: '/' | '/demo-expired' }) {
       >
         {t('skipToContent')}
       </a>
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-6 py-6 sm:px-10">
-        <span className="flex items-center gap-2.5 text-xl font-semibold tracking-tight">
-          <span className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <LayersIcon className="size-5" aria-hidden="true" />
+      <header className="border-b bg-card/80">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-6 py-4 sm:px-10">
+          <span className="flex items-center gap-2.5 text-xl font-semibold tracking-tight">
+            <BrandMark />
+            {t('brand')}
           </span>
-          {t('brand')}
-        </span>
-        <LanguageSelector href={href} />
+          <LanguageSelector href={href} />
+        </div>
       </header>
     </>
   );

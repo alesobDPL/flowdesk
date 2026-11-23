@@ -30,7 +30,29 @@
     "completeTitle": "Complete",
     "completeDescription": "Record the work and keep its history.",
     "footer": "One workflow. Three perspectives. Full traceability.",
-    "demoLabel": "Interactive demo"
+    "demoLabel": "Interactive demo",
+    "replay": "Replay",
+    "sampleRequest": "FD-0005 · Notion · Edit",
+    "perspectivesTitle": "Three perspectives",
+    "perspectives": {
+      "employee": {
+        "eyebrow": "Employee",
+        "title": "Request the access you need",
+        "description": "Submit your request and follow its progress in one place."
+      },
+      "approver": {
+        "eyebrow": "Approver",
+        "title": "Decide with context",
+        "description": "Review each request and keep a record of your decision."
+      },
+      "it": {
+        "eyebrow": "IT",
+        "title": "Complete the workflow",
+        "description": "Manage approved access and record the work you carry out."
+      }
+    },
+    "sourceLink": "Source on GitHub",
+    "opensInNewTab": "Opens in a new tab"
   },
   "expired": {
     "eyebrow": "Your demo space",

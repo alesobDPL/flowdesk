@@ -115,7 +115,11 @@ export function AppShell({ children }: { children: ReactNode }) {
   );
 
   return (
-    <div className="grid min-h-svh grid-cols-[minmax(0,1fr)] grid-rows-[auto_auto_1fr] [grid-template-areas:'header'_'context'_'main'] md:grid-cols-[15.5rem_minmax(0,1fr)] md:grid-rows-[3.5rem_1fr] md:[grid-template-areas:'sidebar_header'_'sidebar_main']">
+    <div className="relative isolate grid min-h-svh grid-cols-[minmax(0,1fr)] grid-rows-[auto_auto_1fr] [grid-template-areas:'header'_'context'_'main'] md:grid-cols-[15.5rem_minmax(0,1fr)] md:grid-rows-[3.5rem_1fr] md:[grid-template-areas:'sidebar_header'_'sidebar_main']">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 left-0 -z-10 hidden w-[15.5rem] border-r bg-card md:block"
+      />
       <a
         href="#main"
         className="sr-only z-50 rounded-md bg-primary px-4 py-3 text-primary-foreground focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
