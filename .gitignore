@@ -24,6 +24,7 @@ dist/
 coverage/
 playwright-report/
 test-results/
+apps/web/demo-video/
 .tools/
 .superpowers/
 

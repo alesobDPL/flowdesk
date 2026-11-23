@@ -7,6 +7,7 @@ const webOrigin = `http://localhost:${webPort}`;
 const apiOrigin = `http://localhost:${apiPort}`;
 const externalBaseUrl = process.env.PLAYWRIGHT_BASE_URL;
 const screenshots = process.env.E2E_SCREENSHOTS === '1';
+const video = process.env.E2E_VIDEO === '1';
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url));
 const databaseUrl =
   process.env.DATABASE_URL ??
@@ -14,12 +15,16 @@ const databaseUrl =
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: screenshots ? '**/screenshots.spec.ts' : '**/*.spec.ts',
-  grepInvert: screenshots ? undefined : /@screenshots/,
+  testMatch: video
+    ? '**/demo-video.spec.ts'
+    : screenshots
+      ? '**/screenshots.spec.ts'
+      : '**/*.spec.ts',
+  grepInvert: screenshots || video ? undefined : /@screenshots|@video/,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 2 : undefined,
+  retries: video ? 0 : process.env.CI ? 2 : 0,
+  workers: video ? 1 : process.env.CI ? 2 : undefined,
   timeout: 90_000,
   expect: { timeout: 15_000 },
   reporter: [['list'], ['html', { open: 'never' }]],
@@ -30,12 +35,18 @@ export default defineConfig({
   },
   projects: [
     { name: 'desktop-chromium', use: { ...devices['Desktop Chrome'] } },
-    {
-      name: 'mobile',
-      use: { ...devices['Pixel 7'], browserName: 'chromium' },
-      testIgnore: '**/a11y.spec.ts',
-      grepInvert: screenshots ? /@desktop/ : /@desktop|@screenshots/,
-    },
+    ...(video
+      ? []
+      : [
+          {
+            name: 'mobile',
+            use: { ...devices['Pixel 7'], browserName: 'chromium' as const },
+            testIgnore: '**/a11y.spec.ts',
+            grepInvert: screenshots
+              ? /@desktop|@video/
+              : /@desktop|@screenshots|@video/,
+          },
+        ]),
   ],
   webServer: externalBaseUrl
     ? undefined

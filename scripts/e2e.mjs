@@ -9,7 +9,9 @@ const args = process.argv.slice(2);
 // pnpm passes the script separator through; do not forward it to pnpm exec.
 if (args[0] === '--') args.shift();
 const screenshots = args[0] === '--screenshots';
-if (screenshots) args.shift();
+const video = args[0] === '--video';
+if (screenshots || video) args.shift();
+if (args[0] === '--') args.shift();
 const env = {
   ...process.env,
   DATABASE_URL:
@@ -18,6 +20,7 @@ const env = {
   APP_ORIGIN: process.env.PLAYWRIGHT_BASE_URL ?? `http://localhost:${webPort}`,
   API_PROXY_URL: `http://localhost:${apiPort}`,
   E2E_SCREENSHOTS: screenshots ? '1' : '0',
+  E2E_VIDEO: video ? '1' : '0',
 };
 
 function run(command, args, commandEnv = env) {
@@ -39,7 +42,8 @@ const pnpm = (args, commandEnv = env) =>
     ? run(process.execPath, [pnpmEntry, ...args], commandEnv)
     : run(pnpmEntry, args, commandEnv);
 
-if (!process.env.PLAYWRIGHT_BASE_URL) {
+// Listing tests never needs Docker, a build, servers or a browser.
+if (!process.env.PLAYWRIGHT_BASE_URL && !args.includes('--list')) {
   run('docker', ['compose', '-f', 'compose.dev.yaml', 'up', '-d', '--wait']);
   pnpm(['--filter', '@flowdesk/api', 'migrate'], { ...env, NODE_ENV: 'test' });
   pnpm(['--filter', '@flowdesk/web', 'build'], {

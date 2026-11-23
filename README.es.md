@@ -6,6 +6,8 @@ FlowDesk es una demo de portafolio de un flujo de solicitudes de acceso a
 software, construida con Next.js, Fastify y PostgreSQL. Usa una empresa ficticia y
 datos de ejemplo.
 
+![Recorrido de la demo en inglés: creación, aprobación, finalización por TI e historial](docs/assets/flowdesk-tour.gif)
+
 ## Problema y solución
 
 Las solicitudes de acceso repartidas entre correo, chat y hojas de cálculo hacen
@@ -219,6 +221,21 @@ pnpm screenshots
 espacios nuevos en inglés y guarda los siete PNG indicados arriba en
 `docs/assets/`. Los casos de capturas quedan excluidos de la suite e2e normal.
 En PowerShell, usa `pnpm.cmd` si la política de ejecución bloquea `pnpm.ps1`.
+
+`pnpm demo:video` usa la misma preparación local que `pnpm screenshots` y graba el
+recorrido en inglés con Chromium de escritorio a 1280 × 720, pausas breves para
+leer y un límite de 45 segundos por prueba. Guarda una grabación correcta en
+`apps/web/demo-video/flowdesk-tour.webm` (ignorado por Git). Los casos de vídeo solo
+se ejecutan en este modo, separados de e2e y capturas. Convierte la grabación con
+ffmpeg a `docs/assets/flowdesk-tour.gif` para la vista previa de arriba.
+
+Listar los casos sin iniciar Docker, servidores ni navegador:
+
+```sh
+pnpm test:e2e -- --list
+pnpm screenshots -- --list
+pnpm demo:video -- --list
+```
 
 ## Documentación y contribuciones
 

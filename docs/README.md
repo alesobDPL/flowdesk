@@ -47,6 +47,7 @@ Desde la raíz, con Node.js 26 y Docker disponible para integración y navegador
 | Solo integración, con Testcontainers | `pnpm exec vitest run --config vitest.workspace.ts --project api-integration` |
 | End-to-end | `pnpm test:e2e` |
 | Capturas de documentación | `pnpm screenshots` |
+| Vídeo del recorrido en inglés | `pnpm demo:video` |
 | Lint / tipos / formato | `pnpm lint` / `pnpm typecheck` / `pnpm format:check` |
 | Compilar web | `pnpm --filter @flowdesk/web build` |
 | Compilar API (esbuild) | `pnpm --filter @flowdesk/api build` |
@@ -77,6 +78,16 @@ la [guía local](despliegue/README.md#prueba-local-desde-cero-revisor).
 `docs/assets/`, en inglés, con un viewport de escritorio de 1280 × 800 y otro
 Pixel 7. Se excluyen de la suite e2e normal. [CI](../.github/workflows/ci.yml)
 ejecuta las verificaciones, integración y e2e; guarda el informe si falla e2e.
+
+El [vídeo del recorrido](../apps/web/e2e/demo-video.spec.ts), aprobado por el
+propietario el 2026-11-23 como pulido posterior al MVP junto con la actualización
+de Actions y Dependabot, usa la misma preparación local que las capturas.
+`pnpm demo:video` graba solo en Chromium de escritorio, a 1280 × 720, y guarda el
+resultado correcto en `apps/web/demo-video/flowdesk-tour.webm` (ignorado por Git).
+El revisor convierte ese vídeo con ffmpeg a `docs/assets/flowdesk-tour.gif`,
+referenciado en ambos README. El caso `@video` queda excluido de e2e y capturas.
+Añadir `-- --list` a `pnpm test:e2e`, `pnpm screenshots` o `pnpm demo:video` lista
+los casos sin Docker, servidores ni navegador.
 
 Las reglas de contribución y proceso están en [AGENTS.md](../AGENTS.md) y
 [CLAUDE.md](../CLAUDE.md).
