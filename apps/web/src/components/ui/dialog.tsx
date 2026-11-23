@@ -17,10 +17,7 @@ function DialogOverlay({
   return (
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
-      className={cn(
-        'fixed inset-0 z-50 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0',
-        className,
-      )}
+      className={cn('fixed inset-0 z-50 bg-foreground/50', className)}
       {...props}
     />
   );
@@ -40,14 +37,14 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          'fixed top-1/2 left-1/2 z-50 grid w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 rounded-lg border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95',
+          'fixed top-1/2 left-1/2 z-50 grid w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl border bg-card p-6 text-card-foreground shadow-overlay',
           className,
         )}
         {...props}
       >
         {children}
         {showCloseButton && (
-          <DialogPrimitive.Close className="absolute top-4 right-4 flex size-9 items-center justify-center rounded-sm text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none">
+          <DialogPrimitive.Close className="absolute top-4 right-4 flex size-9 items-center justify-center rounded-md text-muted-foreground transition-[color,background-color,border-color,box-shadow,transform] duration-150 ring-ring ring-offset-2 hover:text-foreground focus-visible:ring-2 focus-visible:outline-none disabled:pointer-events-none">
             <XIcon className="size-4" aria-hidden="true" />
             <span className="sr-only">{t('close')}</span>
           </DialogPrimitive.Close>
@@ -84,7 +81,10 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn('pr-8 text-lg leading-none font-semibold', className)}
+      className={cn(
+        'pr-8 text-base leading-6 font-semibold text-foreground',
+        className,
+      )}
       {...props}
     />
   );
