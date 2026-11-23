@@ -53,6 +53,13 @@
     "INTERNAL_ERROR": "Algo salió mal. Vuelve a intentarlo en un momento."
   },
   "app": {
+    "workspace": "Espacio de trabajo",
+    "subtitles": {
+      "requests": "Consulta tus solicitudes y sigue su progreso.",
+      "approvals": "Revisa las solicitudes y registra tus decisiones.",
+      "queue": "Gestiona los accesos aprobados y registra tu trabajo.",
+      "newRequest": "Explica qué software y acceso necesitas."
+    },
     "viewingAs": "Viendo como",
     "identities": {
       "employee": "Empleado",

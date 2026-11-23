@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { RequestTable } from '../../../../components/request-table';
+import { PageHeader } from '../../../../components/page-header';
 import {
   Tabs,
   TabsContent,
@@ -13,9 +14,10 @@ export default function QueuePage() {
   const t = useTranslations();
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-semibold tracking-tight">
-        {t('app.nav.queue')}
-      </h1>
+      <PageHeader
+        title={t('app.nav.queue')}
+        description={t('app.subtitles.queue')}
+      />
       <Tabs defaultValue="queue">
         <TabsList
           aria-label={t('app.nav.queue')}

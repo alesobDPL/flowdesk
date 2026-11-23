@@ -19,7 +19,7 @@ export function Countdown({ expiresAt }: { expiresAt: string }) {
     <span
       role="timer"
       aria-label={t('label')}
-      className="inline-flex items-center gap-2 text-sm text-muted-foreground"
+      className="inline-flex min-w-0 items-center gap-2 text-xs leading-4 text-muted-foreground tabular-nums"
     >
       <Clock3Icon className="size-4 shrink-0" aria-hidden="true" />
       {remaining <= 0

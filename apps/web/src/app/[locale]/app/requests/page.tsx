@@ -8,6 +8,7 @@ import { useSession } from '../../../../lib/queries';
 import { Button } from '../../../../components/ui/button';
 import { RequestFilters } from '../../../../components/request-filters';
 import { RequestTable } from '../../../../components/request-table';
+import { PageHeader } from '../../../../components/page-header';
 
 export default function RequestsPage() {
   const t = useTranslations();
@@ -29,16 +30,17 @@ export default function RequestsPage() {
     session.data.roles.includes('requester');
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-3xl font-semibold tracking-tight">
-          {t('app.nav.requests')}
-        </h1>
-        {canCreate && (
-          <Button asChild>
-            <Link href="/app/requests/new">{t('requests.new')}</Link>
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        title={t('app.nav.requests')}
+        description={t('app.subtitles.requests')}
+        actions={
+          canCreate && (
+            <Button asChild>
+              <Link href="/app/requests/new">{t('requests.new')}</Link>
+            </Button>
+          )
+        }
+      />
       <RequestFilters value={filters} onChange={setFilters} />
       <RequestTable
         query={{ view: 'mine', status: filters.status, q: search || undefined }}

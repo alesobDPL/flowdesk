@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { useIsMutating } from '@tanstack/react-query';
 import { useLocale, useTranslations } from 'next-intl';
 import type { Locale } from '@flowdesk/shared';
-import { LayersIcon, MenuIcon, RotateCcwIcon } from 'lucide-react';
+import { MenuIcon, RotateCcwIcon } from 'lucide-react';
 import { Link, usePathname, useRouter } from '../i18n/navigation';
 import { homePathFor } from '../lib/app-routing';
 import { useResetDemo, useSession } from '../lib/queries';
@@ -15,6 +15,8 @@ import { IdentitySwitcher } from './identity-switcher';
 import { LanguageSelector } from './language-selector';
 import { TourPanel } from './tour-panel';
 import { Button } from './ui/button';
+import { Card } from './ui/card';
+import { BrandMark } from './brand-mark';
 import {
   Dialog,
   DialogContent,
@@ -85,10 +87,13 @@ export function AppShell({ children }: { children: ReactNode }) {
   const navigation = (mobile: boolean) => (
     <div className="flex flex-col gap-6">
       <nav aria-label={t('app.navigation')}>
+        <p className="mb-3 px-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+          {t('app.workspace')}
+        </p>
         <Link
           href={home}
           aria-current={pathname === home ? 'page' : undefined}
-          className="block rounded-lg bg-secondary px-4 py-3 text-sm font-medium text-secondary-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="block rounded-md px-3 py-3 text-sm font-semibold text-foreground-secondary outline-none transition-colors duration-150 ring-ring ring-offset-2 hover:bg-row-hover focus-visible:ring-2 aria-[current=page]:bg-primary-soft aria-[current=page]:text-primary-strong"
           onClick={() => {
             if (mobile) setMenuOpen(false);
           }}
@@ -99,18 +104,27 @@ export function AppShell({ children }: { children: ReactNode }) {
       <TourPanel />
     </div>
   );
+  const brand = (
+    <Link
+      href="/app"
+      className="inline-flex items-center gap-2 rounded-md text-lg font-semibold tracking-tight outline-none ring-ring ring-offset-2 focus-visible:ring-2"
+    >
+      <BrandMark />
+      {t('common.brand')}
+    </Link>
+  );
 
   return (
-    <div className="min-h-svh">
+    <div className="grid min-h-svh grid-cols-[minmax(0,1fr)] grid-rows-[auto_auto_1fr] [grid-template-areas:'header'_'context'_'main'] md:grid-cols-[15.5rem_minmax(0,1fr)] md:grid-rows-[3.5rem_1fr] md:[grid-template-areas:'sidebar_header'_'sidebar_main']">
       <a
         href="#main"
         className="sr-only z-50 rounded-md bg-primary px-4 py-3 text-primary-foreground focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
       >
         {t('common.skipToContent')}
       </a>
-      <header className="border-b bg-card">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
-          <div className="flex items-center gap-3">
+      <header className="min-w-0 border-b bg-card [grid-area:header]">
+        <div className="flex h-14 items-center justify-between gap-2 px-4 md:justify-end md:px-8">
+          <div className="flex min-w-0 items-center gap-2 md:hidden">
             <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
               <SheetTrigger asChild>
                 <Button
@@ -132,17 +146,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <div className="px-4 pb-6">{menuOpen && navigation(true)}</div>
               </SheetContent>
             </Sheet>
-            <Link
-              href="/app"
-              className="flex items-center gap-2 rounded-md text-xl font-semibold tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-                <LayersIcon className="size-5" aria-hidden="true" />
-              </span>
-              {t('common.brand')}
-            </Link>
+            {brand}
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-2 md:gap-3">
             <LanguageSelector href={languageHref} />
             <Dialog
               open={resetOpen}
@@ -156,11 +162,12 @@ export function AppShell({ children }: { children: ReactNode }) {
               <DialogTrigger asChild>
                 <Button
                   variant="outline"
+                  className="size-10 p-0 md:w-auto md:px-4"
                   aria-label={t('app.reset')}
                   disabled={switching}
                 >
                   <RotateCcwIcon aria-hidden="true" />
-                  <span className="hidden sm:inline">{t('app.reset')}</span>
+                  <span className="hidden md:inline">{t('app.reset')}</span>
                 </Button>
               </DialogTrigger>
               <DialogContent
@@ -214,27 +221,30 @@ export function AppShell({ children }: { children: ReactNode }) {
               </DialogContent>
             </Dialog>
           </div>
-          <div className="flex w-full flex-col gap-4 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
-            <Countdown expiresAt={info.expiresAt} />
-            <IdentitySwitcher session={info} />
-          </div>
         </div>
       </header>
-      <div className="mx-auto grid max-w-7xl md:grid-cols-[17rem_1fr]">
+      <div className="contents md:sticky md:top-0 md:flex md:h-svh md:min-w-0 md:flex-col md:self-start md:[grid-area:sidebar]">
         <aside
           aria-label={t('app.navigation')}
-          className="hidden min-h-[calc(100svh-11rem)] border-r p-5 md:block"
+          className="hidden min-h-0 overflow-y-auto border-r bg-card md:block md:flex-1"
         >
-          {navigation(false)}
+          <div className="flex h-14 items-center px-5">{brand}</div>
+          <div className="p-4 pt-6">{navigation(false)}</div>
         </aside>
-        <main
-          id="main"
-          tabIndex={-1}
-          className="min-w-0 p-6 outline-none sm:p-8"
-        >
-          {children}
-        </main>
+        <div className="min-w-0 border-b bg-card px-4 py-3 [grid-area:context] md:shrink-0 md:border-r md:border-b-0 md:p-4">
+          <Card className="grid min-w-0 grid-cols-[minmax(0,1fr)_7rem] items-center gap-3 border-0 shadow-none md:grid-cols-1 md:gap-4 md:border md:p-3 md:shadow-card">
+            <IdentitySwitcher session={info} />
+            <Countdown expiresAt={info.expiresAt} />
+          </Card>
+        </div>
       </div>
+      <main
+        id="main"
+        tabIndex={-1}
+        className="min-w-0 p-6 outline-none [grid-area:main] md:p-8"
+      >
+        <div className="mx-auto w-full max-w-7xl">{children}</div>
+      </main>
     </div>
   );
 }

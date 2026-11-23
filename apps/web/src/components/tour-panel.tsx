@@ -20,8 +20,8 @@ export function TourPanel() {
   const messages = useTranslations();
   const tour = useTour();
   return (
-    <details className="rounded-xl border bg-card p-4">
-      <summary className="cursor-pointer rounded-sm text-base font-semibold outline-none focus-visible:ring-2 focus-visible:ring-ring">
+    <details className="rounded-lg border bg-table-head p-3 text-foreground-secondary">
+      <summary className="cursor-pointer rounded-sm text-sm font-semibold text-foreground outline-none ring-ring ring-offset-2 focus-visible:ring-2">
         {t('title')}
       </summary>
       <p

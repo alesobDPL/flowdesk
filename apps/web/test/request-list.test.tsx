@@ -5,6 +5,7 @@ import {
   fireEvent,
   render,
   screen,
+  within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
@@ -74,6 +75,74 @@ function show(children: ReactNode, current = session) {
     </NextIntlClientProvider>,
   );
 }
+
+it('each list page has one h1 and its subtitle', async () => {
+  vi.stubGlobal(
+    'fetch',
+    vi
+      .fn()
+      .mockImplementation((path: string) =>
+        Promise.resolve(
+          Response.json(
+            path === '/api/v1/session'
+              ? session
+              : { items: [], nextCursor: null },
+          ),
+        ),
+      ),
+  );
+  show(<RequestsPage />);
+  expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+  expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(
+    es.app.nav.requests,
+  );
+  expect(
+    screen.getByText('Consulta tus solicitudes y sigue su progreso.'),
+  ).toBeDefined();
+  await screen.findByText(es.requests.emptyMine);
+});
+
+it('table uses fixed layout and the status cell does not wrap', async () => {
+  const longName = 'S'.repeat(100);
+  vi.stubGlobal(
+    'fetch',
+    vi.fn().mockImplementation((path: string) =>
+      Promise.resolve(
+        Response.json(
+          path === '/api/v1/session'
+            ? session
+            : {
+                items: [{ ...first, softwareName: longName }],
+                nextCursor: null,
+              },
+        ),
+      ),
+    ),
+  );
+  show(
+    <RequestTable
+      query={{ view: 'mine' }}
+      emptyMessageKey="requests.emptyMine"
+    />,
+  );
+  const table = await screen.findByRole('table');
+  expect(table.classList.contains('table-fixed')).toBe(true);
+  const columns = table.querySelectorAll('colgroup col');
+  expect(columns).toHaveLength(5);
+  for (const column of columns) expect(column.className).toMatch(/w-/);
+  const status = within(table).getByText(es.statuses.approved);
+  expect(status.classList.contains('whitespace-nowrap')).toBe(true);
+  expect(status.closest('td')?.classList.contains('whitespace-nowrap')).toBe(
+    true,
+  );
+  expect(
+    status.parentElement?.querySelector('[aria-hidden="true"]'),
+  ).not.toBeNull();
+  expect(status.parentElement?.className).not.toMatch(/bg-blue/);
+  expect(within(table).getByText(longName).getAttribute('title')).toBe(
+    longName,
+  );
+});
 
 it('accumulates cursor pages and preserves filters and detail links', async () => {
   const fetch = vi.fn().mockImplementation((path: string) =>

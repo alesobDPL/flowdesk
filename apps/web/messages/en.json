@@ -53,6 +53,13 @@
     "INTERNAL_ERROR": "Something went wrong. Please try again in a moment."
   },
   "app": {
+    "workspace": "Workspace",
+    "subtitles": {
+      "requests": "Track your requests and follow their progress.",
+      "approvals": "Review requests and record your decisions.",
+      "queue": "Manage approved access and record your work.",
+      "newRequest": "Explain the software and access you need."
+    },
     "viewingAs": "Viewing as",
     "identities": {
       "employee": "Employee",

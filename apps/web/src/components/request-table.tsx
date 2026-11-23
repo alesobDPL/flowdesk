@@ -2,12 +2,14 @@
 
 import { useLocale, useTranslations } from 'next-intl';
 import type { Locale } from '@flowdesk/shared';
+import { InboxIcon } from 'lucide-react';
 import { Link } from '../i18n/navigation';
 import { useRequestList, useSession, type ListQuery } from '../lib/queries';
 import { formatDate } from '../lib/format';
 import { errorMessageKey } from '../lib/error-messages';
 import { Button } from './ui/button';
 import { StatusBadge } from './status-badge';
+import { Card, CardContent } from './ui/card';
 
 export function RequestTable({
   query,
@@ -41,41 +43,54 @@ export function RequestTable({
     return error || <p role="status">{t('common.loading')}</p>;
   if (requests.data.items.length === 0)
     return (
-      <div className="space-y-4 rounded-xl border bg-card p-8">
-        {error}
-        <p className="text-muted-foreground">
-          {t(
-            query.q || query.status
-              ? 'requests.emptyFiltered'
-              : emptyMessageKey,
+      <Card>
+        <CardContent className="flex flex-col items-center gap-4 p-8 text-center">
+          {error}
+          <InboxIcon
+            className="size-8 text-muted-foreground"
+            aria-hidden="true"
+          />
+          <p className="text-muted-foreground">
+            {t(
+              query.q || query.status
+                ? 'requests.emptyFiltered'
+                : emptyMessageKey,
+            )}
+          </p>
+          {canCreate && query.view === 'mine' && (
+            <Button asChild variant="outline">
+              <Link href="/app/requests/new">{t('requests.createFirst')}</Link>
+            </Button>
           )}
-        </p>
-        {canCreate && query.view === 'mine' && (
-          <Button asChild variant="outline">
-            <Link href="/app/requests/new">{t('requests.createFirst')}</Link>
-          </Button>
-        )}
-      </div>
+        </CardContent>
+      </Card>
     );
   return (
-    <div className="space-y-4">
+    <div className="min-w-0 space-y-4">
       {error}
-      <div
+      <Card
         role="region"
         aria-label={t('requests.caption')}
         tabIndex={0}
-        className="overflow-x-auto rounded-xl border bg-card outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="min-w-0 overflow-x-auto outline-none ring-ring ring-offset-2 focus-visible:ring-2"
       >
-        <table className="w-full min-w-2xl text-left text-sm">
+        <table className="w-full min-w-[54rem] table-fixed text-left text-sm text-foreground-secondary">
           <caption className="sr-only">{t('requests.caption')}</caption>
-          <thead className="border-b bg-muted/50">
+          <colgroup>
+            <col className="w-28" />
+            <col className="w-56" />
+            <col className="w-40" />
+            <col className="w-60" />
+            <col className="w-32" />
+          </colgroup>
+          <thead className="border-b bg-table-head">
             <tr>
               {(['code', 'software', 'access', 'status', 'date'] as const).map(
                 (column) => (
                   <th
                     key={column}
                     scope="col"
-                    className="px-4 py-3 font-medium text-muted-foreground"
+                    className="px-4 py-3 text-xs leading-4 font-semibold tracking-wider text-muted-foreground uppercase"
                   >
                     {t(`requests.columns.${column}`)}
                   </th>
@@ -87,30 +102,30 @@ export function RequestTable({
             {requests.data.items.map((request) => (
               <tr
                 key={request.id}
-                className="border-b last:border-0 hover:bg-muted/30"
+                className="h-12 border-b border-row-divider transition-colors duration-150 last:border-0 hover:bg-row-hover"
               >
-                <th scope="row" className="px-4 py-4 font-medium">
+                <th scope="row" className="px-4 py-3 font-medium">
                   <Link
                     href={{
                       pathname: '/app/requests/[id]',
                       params: { id: request.id },
                     }}
                     aria-label={t('requests.open', { code: request.code })}
-                    className="rounded-sm text-primary underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+                    className="rounded-sm text-primary-strong tabular-nums underline-offset-4 outline-none ring-ring ring-offset-2 hover:underline focus-visible:ring-2"
                   >
                     {request.code}
                   </Link>
                 </th>
-                <td className="max-w-64 px-4 py-4 break-words">
+                <td className="truncate px-4 py-3" title={request.softwareName}>
                   {request.softwareName}
                 </td>
-                <td className="px-4 py-4">
+                <td className="px-4 py-3 break-words">
                   {t(`accessLevels.${request.accessLevel}`)}
                 </td>
-                <td className="px-4 py-4">
-                  <StatusBadge status={request.status} />
+                <td className="px-4 py-3 whitespace-nowrap">
+                  <StatusBadge status={request.status} variant="inline" />
                 </td>
-                <td className="px-4 py-4 whitespace-nowrap">
+                <td className="px-4 py-3 whitespace-nowrap tabular-nums">
                   <time dateTime={request.createdAt}>
                     {formatDate(request.createdAt, locale)}
                   </time>
@@ -119,7 +134,7 @@ export function RequestTable({
             ))}
           </tbody>
         </table>
-      </div>
+      </Card>
       {requests.hasNextPage && (
         <Button
           variant="outline"

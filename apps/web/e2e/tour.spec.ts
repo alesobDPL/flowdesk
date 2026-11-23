@@ -112,6 +112,102 @@ test('completes the tour in English', { tag: '@desktop' }, async ({ page }) => {
   await completeTour(page, 'en', false);
 });
 
+test('no horizontal page scroll at 375 px with long values', async ({
+  page,
+}, testInfo) => {
+  test.skip(
+    testInfo.project.name !== 'mobile',
+    'Mobile layout regression in Spanish.',
+  );
+  await page.setViewportSize({ width: 375, height: 812 });
+  await startDemo(page, 'es');
+  const software = 'S'.repeat(100);
+  await createRequest(page, software, 'es');
+  await page.goto(paths.es.list);
+  const row = page.getByRole('row').filter({ hasText: software });
+  await expect(row).toHaveCount(1);
+  await expect(
+    row.getByRole('cell', { name: software, exact: true }),
+  ).toHaveAttribute('title', software);
+  for (const width of [375, 768]) {
+    await page.setViewportSize({ width, height: 812 });
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () =>
+            document.documentElement.scrollWidth <=
+            document.documentElement.clientWidth,
+        ),
+      )
+      .toBe(true);
+    for (const text of [
+      messages.es.statuses.pending_approval,
+      messages.es.statuses.approved,
+    ]) {
+      const status = page
+        .getByRole('table')
+        .getByText(text, { exact: true })
+        .first();
+      await expect(status).toBeVisible();
+      await expect
+        .poll(() =>
+          status.evaluate((element) => {
+            const style = getComputedStyle(element);
+            return Math.abs(
+              element.getBoundingClientRect().height -
+                Number.parseFloat(style.lineHeight),
+            );
+          }),
+        )
+        .toBeLessThanOrEqual(1);
+    }
+  }
+});
+
+test(
+  'keeps one identity control when crossing md',
+  { tag: '@desktop' },
+  async ({ page }) => {
+    await startDemo(page, 'es');
+    const identity = page.getByRole('combobox', {
+      name: messages.es.app.viewingAs,
+      exact: true,
+    });
+    const original = await identity.elementHandle();
+    const timer = await page
+      .getByRole('timer', { name: messages.es.countdown.label })
+      .elementHandle();
+    for (const width of [1024, 375, 768, 1024]) {
+      await page.setViewportSize({ width, height: 812 });
+      await expect(identity).toHaveCount(1);
+      await expect(identity).toBeVisible();
+      expect(
+        await identity.evaluate(
+          (element, initial) => element === initial,
+          original,
+        ),
+      ).toBe(true);
+      await expect(
+        page.getByRole('timer', { name: messages.es.countdown.label }),
+      ).toHaveCount(1);
+      expect(
+        await page
+          .getByRole('timer')
+          .evaluate((element, initial) => element === initial, timer),
+      ).toBe(true);
+      await expect(
+        page.getByRole('button', { name: messages.es.app.reset, exact: true }),
+      ).toBeVisible();
+      expect(
+        await page.locator('[id]').evaluateAll((elements) => {
+          const ids = elements.map((element) => element.id);
+          return ids.length === new Set(ids).size;
+        }),
+      ).toBe(true);
+    }
+  },
+);
+
 test('double click on submit creates one request', async ({ page }) => {
   await startDemo(page);
   await fillNewRequest(page, 'Double click software');

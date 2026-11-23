@@ -23,7 +23,9 @@ export function IdentitySwitcher({ session }: { session: SessionInfo }) {
   const change = useSwitchIdentity();
   return (
     <div className="flex min-w-0 flex-col gap-2">
-      <Label htmlFor={id}>{t('app.viewingAs')}</Label>
+      <Label htmlFor={id} className="text-xs text-muted-foreground">
+        {t('app.viewingAs')}
+      </Label>
       <Select
         value={session.activeIdentity}
         disabled={change.isPending}
@@ -41,10 +43,10 @@ export function IdentitySwitcher({ session }: { session: SessionInfo }) {
           id={id}
           aria-busy={change.isPending}
           aria-describedby={change.isError ? `${id}-error` : undefined}
-          className="w-full max-w-full"
+          className="h-auto min-h-10 w-full min-w-0 max-w-full text-left [&>span]:min-w-0 [&>svg]:shrink-0"
         >
           <SelectValue>
-            <span className="truncate">
+            <span className="block whitespace-normal">
               {session.user.displayName} ·{' '}
               {t(`app.identities.${session.activeIdentity}`)}
             </span>

@@ -25,8 +25,8 @@ export function RequestFilters({
   const id = useId();
   const t = useTranslations();
   return (
-    <div className="flex flex-col gap-4 sm:flex-row">
-      <div className="space-y-2 sm:w-64">
+    <div className="flex min-w-0 flex-col gap-4 rounded-lg border bg-card p-4 shadow-card sm:flex-row sm:items-end">
+      <div className="min-w-0 space-y-2 sm:w-60 sm:shrink-0">
         <Label htmlFor={`${id}-status`}>{t('requests.statusFilter')}</Label>
         <Select
           value={value.status ?? 'all'}
@@ -37,7 +37,10 @@ export function RequestFilters({
             onChange({ ...value, status });
           }}
         >
-          <SelectTrigger id={`${id}-status`} className="w-full">
+          <SelectTrigger
+            id={`${id}-status`}
+            className="w-full min-w-0 [&>span]:truncate [&>svg]:shrink-0"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
