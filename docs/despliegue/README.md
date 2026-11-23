@@ -186,20 +186,25 @@ con permiso `packages: write`. Publica en
 `ghcr.io/<propietario-del-repositorio>/flowdesk-api` y `flowdesk-web`, con etiquetas
 SHA completo y `latest`. El propietario decide cuándo habilitar esa variable.
 Si el propietario del repositorio cambia, ajustar `FLOWDESK_IMAGE_REGISTRY`.
-No se ha publicado ninguna imagen como parte de E7.
+Las imágenes se publican desde `main` y son públicas porque el repositorio lo es; el VPS las descarga sin credenciales.
 
 ## Actualización y vuelta atrás por etiqueta (solo con autorización)
 
 Con imágenes previamente publicadas y accesibles desde el host, guardar la
 etiqueta anterior y establecer `FLOWDESK_IMAGE_TAG` en `.env` al SHA aprobado.
 Usar etiquetas SHA para que la versión sea reproducible; `latest` es mutable.
-No compilar en el VPS:
+No compilar en el VPS. La carpeta del despliegue pertenece a root, así que los
+comandos se ejecutan como root dentro de ella:
 
 ```sh
-docker compose pull api web
-docker compose --profile migrate run --rm --no-build migrate
-docker compose up -d --no-build --wait
+sudo bash -c 'cd /opt/flowdesk && docker compose pull api web'
+sudo bash -c 'cd /opt/flowdesk && docker compose --profile migrate run --rm migrate'
+sudo bash -c 'cd /opt/flowdesk && docker compose up -d --no-build --wait'
 ```
+
+`docker compose run` no admite `--no-build` en Compose 5.8; no construye nada si
+la imagen ya se descargó con `pull`. La migración no imprime nada cuando termina
+bien; el código de salida 0 lo confirma.
 
 Comprobar salud, cabeceras y recorrido por HTTPS. Para volver atrás, restaurar
 la etiqueta anterior en `.env`, ejecutar `docker compose pull api web` y
