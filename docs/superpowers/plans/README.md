@@ -7,4 +7,4 @@ Cada plan se guarda como `YYYY-MM-DD-<tema>.md` y parte de un diseño aprobado. 
 | Plan | Fecha | Estado |
 | --- | --- | --- |
 | [MVP de FlowDesk](2026-11-22-flowdesk-mvp.md) | 2026-11-22 | Aprobado el 2026-11-22 |
-| [Rediseño visual](2026-11-23-flowdesk-visual-redesign.md) | 2026-11-23 | Aprobado el 2026-11-23 |
+| [Rediseño visual](2026-11-23-flowdesk-visual-redesign.md) | 2026-11-23 | Completado el 2026-11-23 |

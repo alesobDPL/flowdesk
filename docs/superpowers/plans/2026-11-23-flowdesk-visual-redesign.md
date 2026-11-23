@@ -4,7 +4,7 @@
 
 [Planes](README.md) · [Diseño aprobado](../specs/2026-11-23-flowdesk-visual-redesign-design.md) · [Plan del MVP](2026-11-22-flowdesk-mvp.md)
 
-Fecha: 2026-11-23. Estado: **Aprobado por el propietario el 2026-11-23.** Autoriza delegar a Codex los encargos E8 a E12, en serie y en el orden indicado.
+Fecha: 2026-11-23. Estado: **Completado el 2026-11-23.** Aprobado por el propietario el 2026-11-23; encargos E8 a E12 aceptados y fusionados en `main`.
 
 **Goal:** Aplicar a toda la web de FlowDesk el sistema visual «Corporativo nítido» del diseño aprobado, sin cambiar la lógica, la API ni las dependencias, y cerrar el MVP con capturas y GIF nuevos.
 
@@ -267,3 +267,4 @@ Lo siguiente queda fuera de este plan. Cada paso necesita la autorización expl�
 - **2026-11-23: el propietario acepta E9** («Acepto, fusiona»). Fusión *fast-forward* de `feat/e9-shell-tables` (`b746db0`) en `main`, tras una ronda de corrección: desplazamiento del documento (axe `scrollable-region-focusable`) y «Viendo como» sin truncar. Verificado: Vitest 430/430 y e2e 16/16.
 - **2026-11-23: el propietario acepta E10** («Acepto y súmalo a E11»). Fusión *fast-forward* de `feat/e10-detail-form` (`913c9c8`) en `main`. Verificado: Vitest 439/439 y e2e 17/17. Acepta además ampliar el alcance de E11 con un retoque de `app-shell.tsx`: fondo blanco y borde de la barra lateral en toda la altura de la página, para que las capturas de página completa no muestren el corte a la altura de la ventana.
 - **2026-11-23: el propietario acepta E11** («Acepto, fusiona»). Fusión *fast-forward* de `feat/e11-landing` (`8257615`) en `main`. Verificado: Vitest 448/448 y e2e 17/17.
+- **2026-11-23: el propietario acepta E12** («Acepto, fusiona»). Fusión *fast-forward* de `feat/e12-assets` (`885e4ef`) en `main`: capturas y GIF regenerados por Claude Code, porque necesitan Docker. Comprobación en 375, 768, 1024 y 1440 px, en español e inglés: 8/8. **Rediseño visual completo (E8–E12).** El push, el despliegue y la publicación siguen pendientes de autorización.

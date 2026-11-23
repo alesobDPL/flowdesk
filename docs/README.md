@@ -12,7 +12,7 @@ ficticios, tres identidades por visitante y espacios temporales aislados.
 | [Diseño del MVP](superpowers/specs/2026-11-22-flowdesk-mvp-design.md) | Diseño aprobado por el propietario el 2026-11-22 |
 | [Rediseño visual](superpowers/specs/2026-11-23-flowdesk-visual-redesign-design.md) | Diseño aprobado por el propietario el 2026-11-23 |
 | [Plan de implementación](superpowers/plans/2026-11-22-flowdesk-mvp.md) | Plan aprobado el 2026-11-22, tareas y verificaciones |
-| [Plan del rediseño visual](superpowers/plans/2026-11-23-flowdesk-visual-redesign.md) | Plan aprobado el 2026-11-23: encargos E8 a E12 |
+| [Plan del rediseño visual](superpowers/plans/2026-11-23-flowdesk-visual-redesign.md) | Completado el 2026-11-23: encargos E8 a E12 |
 | [Guía de despliegue](despliegue/README.md) | Imágenes, Compose, Caddy, migraciones, prueba local y mediciones pendientes; VPS bloqueado |
 | [Convenciones de diseños](superpowers/specs/README.md) / [planes](superpowers/plans/README.md) | Organización de los documentos |
 
