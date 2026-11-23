@@ -264,3 +264,4 @@ Lo siguiente queda fuera de este plan. Cada paso necesita la autorización expl�
 
 - **2026-11-23: el propietario aprueba este plan** («Apruebo, lanza E8»). Autoriza delegar los encargos E8 a E12 a Codex, en serie, cada uno en su rama y worktree. Cada encargo necesita su aceptación antes de fusionarse. No autoriza hacer push, desplegar ni publicar.
 - **2026-11-23: el propietario acepta E8** («Acepto, fusiona»). Fusión *fast-forward* de `feat/e8-visual-system` (`32c28dc`) en `main`. Verificado: Vitest 420/420 y e2e 14/14.
+- **2026-11-23: el propietario acepta E9** («Acepto, fusiona»). Fusión *fast-forward* de `feat/e9-shell-tables` (`b746db0`) en `main`, tras una ronda de corrección: desplazamiento del documento (axe `scrollable-region-focusable`) y «Viendo como» sin truncar. Verificado: Vitest 430/430 y e2e 16/16.
