@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { RequestForm } from '../../../../../components/request-form';
+import { PageHeader } from '../../../../../components/page-header';
 import { useSession } from '../../../../../lib/queries';
 import { Link } from '../../../../../i18n/navigation';
 import { homePathFor } from '../../../../../lib/app-routing';
@@ -27,9 +28,10 @@ export default function NewRequestPage() {
     );
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-semibold tracking-tight">
-        {t('requestForm.title')}
-      </h1>
+      <PageHeader
+        title={t('requestForm.title')}
+        description={t('app.subtitles.newRequest')}
+      />
       <RequestForm />
     </div>
   );

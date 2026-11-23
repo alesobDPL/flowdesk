@@ -13,24 +13,38 @@ export function RequestTimeline({ events }: { events: RequestEventDto[] }) {
   if (ordered.length === 0)
     return <p className="text-muted-foreground">{t('timeline.empty')}</p>;
   return (
-    <ol aria-label={t('timeline.title')} className="space-y-6 border-l-2 pl-5">
-      {ordered.map((event) => (
-        <li key={event.id} className="space-y-2">
-          <h3 className="font-medium">{t(`events.${event.type}`)}</h3>
-          <p className="text-sm">{event.actor.displayName}</p>
-          <time
-            dateTime={event.createdAt}
-            className="block text-sm text-muted-foreground"
-          >
-            {formatDateTime(event.createdAt, locale)}
-          </time>
-          {event.note && (
-            <p className="rounded-md bg-muted p-3 text-sm break-words whitespace-pre-wrap">
-              {event.note}
+    <div className="relative min-w-0 [overflow-wrap:anywhere]">
+      <span
+        aria-hidden="true"
+        className="absolute top-2 bottom-2 left-1.5 w-px bg-border"
+      />
+      <ol aria-label={t('timeline.title')} className="space-y-6">
+        {ordered.map((event) => (
+          <li key={event.id} className="relative min-w-0 space-y-2 pl-7">
+            <span
+              aria-hidden="true"
+              className="absolute top-1 left-0 size-3 rounded-full border-2 border-primary bg-card"
+            />
+            <h3 className="font-semibold text-foreground">
+              {t(`events.${event.type}`)}
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              {event.actor.displayName}
             </p>
-          )}
-        </li>
-      ))}
-    </ol>
+            <time
+              dateTime={event.createdAt}
+              className="block text-sm text-muted-foreground tabular-nums"
+            >
+              {formatDateTime(event.createdAt, locale)}
+            </time>
+            {event.note && (
+              <p className="rounded-md bg-primary-soft p-3 text-sm whitespace-pre-wrap text-foreground-secondary">
+                {event.note}
+              </p>
+            )}
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }

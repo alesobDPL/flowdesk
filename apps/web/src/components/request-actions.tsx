@@ -10,6 +10,7 @@ import { errorMessageKey } from '../lib/error-messages';
 import { Button } from './ui/button';
 import { Dialog } from './ui/dialog';
 import { ReasonDialog } from './reason-dialog';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
 export function RequestActions({ request }: { request: RequestDetail }) {
   const t = useTranslations();
@@ -41,36 +42,52 @@ export function RequestActions({ request }: { request: RequestDetail }) {
     }
   };
 
+  const showError = mutation.isError && mutation.error.status !== 409;
+  const showActions = request.allowedActions.length > 0 || showError;
+  if (!showActions && mode === null) return null;
+
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap gap-3">
-        {request.allowedActions.map((action) => (
-          <Button
-            key={action}
-            variant={action === 'reject' ? 'destructive' : 'default'}
-            disabled={mutation.isPending}
-            aria-busy={mutation.isPending}
-            onClick={(event) => {
-              if (action === 'assign') {
-                void perform('assign', {});
-                return;
-              }
-              trigger.current = event.currentTarget;
-              mutation.reset();
-              setMode(action);
-            }}
-          >
-            {t(`actions.${action}`)}
-          </Button>
-        ))}
-      </div>
-      {request.allowedActions.length === 0 && (
-        <p className="text-sm text-muted-foreground">{t('actions.none')}</p>
-      )}
-      {mutation.isError && mutation.error.status !== 409 && (
-        <p role="alert" className="text-sm text-destructive">
-          {t(errorMessageKey(mutation.error.code ?? 'INTERNAL_ERROR'))}
-        </p>
+    <>
+      {showActions && (
+        <Card
+          role="region"
+          aria-labelledby="request-actions"
+          className="order-1 min-w-0"
+        >
+          <CardHeader>
+            <CardTitle id="request-actions">
+              {t('requestDetail.actions')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex flex-wrap gap-3">
+              {request.allowedActions.map((action) => (
+                <Button
+                  key={action}
+                  variant={action === 'reject' ? 'destructive' : 'default'}
+                  disabled={mutation.isPending}
+                  aria-busy={mutation.isPending}
+                  onClick={(event) => {
+                    if (action === 'assign') {
+                      void perform('assign', {});
+                      return;
+                    }
+                    trigger.current = event.currentTarget;
+                    mutation.reset();
+                    setMode(action);
+                  }}
+                >
+                  {t(`actions.${action}`)}
+                </Button>
+              ))}
+            </div>
+            {showError && (
+              <p role="alert" className="text-sm text-destructive">
+                {t(errorMessageKey(mutation.error.code ?? 'INTERNAL_ERROR'))}
+              </p>
+            )}
+          </CardContent>
+        </Card>
       )}
       <Dialog
         open={mode !== null}
@@ -95,6 +112,6 @@ export function RequestActions({ request }: { request: RequestDetail }) {
           />
         )}
       </Dialog>
-    </div>
+    </>
   );
 }

@@ -164,7 +164,6 @@
     "release": "Release",
     "complete": "Complete",
     "saving": "Saving…",
-    "none": "No actions are available in the current state.",
     "changed": "This request has changed. Its details have been refreshed."
   },
   "actionDialog": {

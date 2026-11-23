@@ -164,7 +164,6 @@
     "release": "Liberar",
     "complete": "Completar",
     "saving": "Guardando…",
-    "none": "No hay acciones disponibles en el estado actual.",
     "changed": "La solicitud ha cambiado. Se ha actualizado el detalle."
   },
   "actionDialog": {
@@ -197,7 +196,7 @@
   },
   "requestDetail": {
     "title": "{code} · {software}",
-    "data": "Datos de la solicitud",
+    "data": "Información de la solicitud",
     "people": "Responsables",
     "actions": "Acciones",
     "requester": "Solicitante",

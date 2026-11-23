@@ -1,4 +1,10 @@
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import {
+  cleanup,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
 import { toast } from 'sonner';
@@ -25,11 +31,148 @@ function show() {
   render(
     <NextIntlClientProvider locale="es" messages={es}>
       <Providers>
-        <DetailPage />
+        <main>
+          <DetailPage />
+        </main>
       </Providers>
     </NextIntlClientProvider>,
   );
 }
+
+it('hides the actions card when no action is available', async () => {
+  vi.stubGlobal(
+    'fetch',
+    vi
+      .fn()
+      .mockResolvedValue(Response.json({ ...request, allowedActions: [] })),
+  );
+  show();
+  const heading = await screen.findByRole('heading', { level: 1 });
+  expect(heading.getAttribute('tabindex')).toBe('-1');
+  expect(heading.id).not.toBe('');
+  expect(
+    screen.queryByRole('heading', { name: es.requestDetail.actions }),
+  ).toBeNull();
+  expect(
+    screen.queryByRole('region', { name: es.requestDetail.actions }),
+  ).toBeNull();
+  expect(document.activeElement).not.toBe(heading);
+});
+
+it('renders the status badge exactly once inside main', async () => {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue(Response.json(request)));
+  show();
+  await screen.findByRole('heading', { level: 1 });
+  const main = within(screen.getByRole('main'));
+  const status = main.getAllByText(es.statuses.approved, { exact: true });
+  expect(status).toHaveLength(1);
+  expect(status[0]!.parentElement?.classList.contains('bg-blue-50')).toBe(true);
+  const header = status[0]!.closest('header')!;
+  const created = header.querySelector('time');
+  expect(created?.dateTime).toBe(request.createdAt);
+  expect(
+    status[0]!.compareDocumentPosition(created!) &
+      Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeTruthy();
+});
+
+it.each([
+  { action: 'complete', label: es.actions.complete, status: 'completed' },
+  { action: 'reject', label: es.actions.reject, status: 'rejected' },
+])(
+  'moves focus to the heading after the last $action empties the actions',
+  async ({ action, label, status }) => {
+    let completed = false;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockImplementation((_path: string, init: RequestInit) => {
+        if (init.method === 'POST') completed = true;
+        return Promise.resolve(
+          Response.json({
+            ...request,
+            status: completed
+              ? status
+              : action === 'complete'
+                ? 'in_progress'
+                : 'pending_approval',
+            allowedActions: completed ? [] : [action],
+          }),
+        );
+      }),
+    );
+    show();
+    await userEvent.click(await screen.findByRole('button', { name: label }));
+    const dialog = within(screen.getByRole('dialog'));
+    if (action === 'reject')
+      await userEvent.type(
+        dialog.getByRole('textbox'),
+        'No se necesita este acceso.',
+      );
+    await userEvent.click(dialog.getByRole('button', { name: label }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    await waitFor(() =>
+      expect(document.activeElement).toBe(
+        screen.getByRole('heading', { level: 1 }),
+      ),
+    );
+    expect(
+      screen.queryByRole('heading', { name: es.requestDetail.actions }),
+    ).toBeNull();
+  },
+);
+
+it('keeps the dialog locked until the last action and its refetch finish', async () => {
+  let completed = false;
+  let finishRefetch: ((value: Response) => void) | undefined;
+  const result = { ...request, status: 'completed', allowedActions: [] };
+  vi.stubGlobal(
+    'fetch',
+    vi.fn().mockImplementation((_path: string, init: RequestInit) => {
+      if (init.method === 'POST') {
+        completed = true;
+        return Promise.resolve(Response.json(result));
+      }
+      if (completed)
+        return new Promise<Response>((resolve) => {
+          finishRefetch = resolve;
+        });
+      return Promise.resolve(
+        Response.json({
+          ...request,
+          status: 'in_progress',
+          allowedActions: ['complete'],
+        }),
+      );
+    }),
+  );
+  show();
+  await userEvent.click(
+    await screen.findByRole('button', { name: es.actions.complete }),
+  );
+  const dialog = screen.getByRole('dialog');
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: es.actions.complete }),
+  );
+  await waitFor(() => expect(finishRefetch).toBeDefined());
+  expect(screen.getByRole('dialog')).toBe(dialog);
+  expect(
+    within(dialog).getByRole<HTMLButtonElement>('button', {
+      name: es.app.cancel,
+    }).disabled,
+  ).toBe(true);
+  expect(document.activeElement).not.toBe(
+    document.getElementById('request-title'),
+  );
+  await userEvent.keyboard('{Escape}');
+  expect(screen.getByRole('dialog')).toBe(dialog);
+  finishRefetch?.(Response.json(result));
+  await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+  await waitFor(() =>
+    expect(document.activeElement).toBe(
+      screen.getByRole('heading', { level: 1 }),
+    ),
+  );
+});
 
 it('renders the actual detail, people and history', async () => {
   vi.stubGlobal(

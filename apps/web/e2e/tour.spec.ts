@@ -208,6 +208,43 @@ test(
   },
 );
 
+test('detail does not scroll horizontally with a long justification', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile', 'Mobile detail regression.');
+  await page.setViewportSize({ width: 375, height: 812 });
+  await startDemo(page, 'es');
+  const software = 'S'.repeat(100);
+  const url = 'https://example.com/' + 'a'.repeat(180);
+  expect(url).toHaveLength(200);
+  await fillNewRequest(page, software, 'es');
+  await page
+    .getByLabel(messages.es.requestForm.justification, { exact: true })
+    .fill(url);
+  await page
+    .getByRole('button', { name: messages.es.requestForm.submit, exact: true })
+    .click();
+  await expect(
+    page.getByRole('heading', {
+      level: 1,
+      name: `FD-0006 · ${software}`,
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('main').getByText(url, { exact: true }),
+  ).toBeVisible();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          document.documentElement.scrollWidth <=
+          document.documentElement.clientWidth,
+      ),
+    )
+    .toBe(true);
+});
+
 test('double click on submit creates one request', async ({ page }) => {
   await startDemo(page);
   await fillNewRequest(page, 'Double click software');

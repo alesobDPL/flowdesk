@@ -47,6 +47,52 @@ it('renders only allowedActions', () => {
   ).toEqual(['Asignarme']);
 });
 
+it('renders nothing when no action or error is available', () => {
+  show(<RequestActions request={{ ...request, allowedActions: [] }} />);
+  expect(screen.queryByRole('heading')).toBeNull();
+  expect(screen.queryByRole('button')).toBeNull();
+  expect(document.querySelector('[data-slot="card"]')).toBeNull();
+  expect(document.body.textContent).toBe('');
+});
+
+it('keeps the dialog locked while an action is pending', async () => {
+  let finish: ((value: Response) => void) | undefined;
+  vi.stubGlobal(
+    'fetch',
+    vi.fn().mockImplementation(
+      () =>
+        new Promise<Response>((resolve) => {
+          finish = resolve;
+        }),
+    ),
+  );
+  show(
+    <RequestActions request={{ ...request, allowedActions: ['complete'] }} />,
+  );
+  await userEvent.click(
+    screen.getByRole('button', { name: es.actions.complete }),
+  );
+  const dialog = screen.getByRole('dialog');
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: es.actions.complete }),
+  );
+  expect(
+    within(dialog).getByRole<HTMLTextAreaElement>('textbox').disabled,
+  ).toBe(true);
+  expect(
+    within(dialog).getByRole<HTMLButtonElement>('button', {
+      name: es.app.cancel,
+    }).disabled,
+  ).toBe(true);
+  expect(
+    within(dialog).queryByRole('button', { name: es.common.close }),
+  ).toBeNull();
+  await userEvent.keyboard('{Escape}');
+  expect(screen.getByRole('dialog')).toBe(dialog);
+  finish?.(Response.json(request));
+  await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+});
+
 it('returns focus to the action button when the dialog is cancelled', async () => {
   show(<RequestActions request={{ ...request, allowedActions: ['reject'] }} />);
   const trigger = screen.getByRole('button', { name: 'Rechazar' });

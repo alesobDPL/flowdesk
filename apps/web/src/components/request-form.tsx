@@ -22,6 +22,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
+import { Card, CardContent, CardFooter } from './ui/card';
 import {
   Select,
   SelectContent,
@@ -122,126 +123,138 @@ export function RequestForm() {
   };
 
   return (
-    <form
-      noValidate
-      onSubmit={(event) => {
-        void form.handleSubmit(submit)(event);
-      }}
-      className="max-w-2xl space-y-6"
-    >
-      <p className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950">
-        {t('requestForm.credentialsNotice')}
-      </p>
-      <div className="space-y-2">
-        <Label htmlFor={fieldId('softwareName')}>
-          {t('requestForm.softwareName')}
-        </Label>
-        <Input
-          id={fieldId('softwareName')}
-          {...form.register('softwareName')}
-          aria-required="true"
-          aria-invalid={!!errors.softwareName}
-          aria-describedby={errorId('softwareName')}
-        />
-        {error('softwareName')}
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor={fieldId('accessLevel')}>
-          {t('requestForm.accessLevel')}
-        </Label>
-        <Controller
-          control={form.control}
-          name="accessLevel"
-          render={({ field }) => (
-            <Select value={field.value} onValueChange={field.onChange}>
-              <SelectTrigger
-                id={fieldId('accessLevel')}
-                ref={field.ref}
-                onBlur={field.onBlur}
-                aria-required="true"
-                aria-invalid={!!errors.accessLevel}
-                aria-describedby={errorId('accessLevel')}
-                className="w-full"
-              >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {ACCESS_LEVELS.map((level) => (
-                  <SelectItem key={level} value={level}>
-                    {t(`accessLevels.${level}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        />
-        {error('accessLevel')}
-      </div>
-      {accessLevel === 'other' && (
-        <div className="space-y-2">
-          <Label htmlFor={fieldId('accessDetail')}>
-            {t('requestForm.accessDetail')}
-          </Label>
-          <Input
-            id={fieldId('accessDetail')}
-            {...form.register('accessDetail')}
-            aria-required="true"
-            aria-invalid={!!errors.accessDetail}
-            aria-describedby={errorId('accessDetail')}
-          />
-          {error('accessDetail')}
-        </div>
-      )}
-      <div className="space-y-2">
-        <Label htmlFor={fieldId('justification')}>
-          {t('requestForm.justification')}
-        </Label>
-        <Textarea
-          id={fieldId('justification')}
-          {...form.register('justification')}
-          aria-required="true"
-          aria-invalid={!!errors.justification}
-          aria-describedby={errorId('justification')}
-        />
-        <p className="text-sm text-muted-foreground">
-          {t('requestForm.justificationHint')}
-        </p>
-        {error('justification')}
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor={fieldId('neededBy')}>{t('requestForm.neededBy')}</Label>
-        <Input
-          id={fieldId('neededBy')}
-          type="date"
-          min={today}
-          {...form.register('neededBy')}
-          aria-invalid={!!errors.neededBy}
-          aria-describedby={errorId('neededBy')}
-        />
-        {error('neededBy')}
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor={fieldId('comments')}>{t('requestForm.comments')}</Label>
-        <Textarea
-          id={fieldId('comments')}
-          {...form.register('comments')}
-          aria-invalid={!!errors.comments}
-          aria-describedby={errorId('comments')}
-        />
-        {error('comments')}
-      </div>
-      {formError && (
-        <p role="alert" className="text-sm text-destructive">
-          {t(errorMessageKey(formError))}
-        </p>
-      )}
-      <Button
-        type="submit"
-        disabled={busy || create.isSuccess}
-        aria-busy={busy}
+    <Card className="w-full max-w-[640px]">
+      <form
+        noValidate
+        onSubmit={(event) => {
+          void form.handleSubmit(submit)(event);
+        }}
       >
-        {t(busy ? 'requestForm.submitting' : 'requestForm.submit')}
-      </Button>
-    </form>
+        <CardContent className="space-y-6 pt-6 text-base">
+          <p className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950">
+            {t('requestForm.credentialsNotice')}
+          </p>
+          <div className="space-y-2">
+            <Label htmlFor={fieldId('softwareName')} className="font-semibold">
+              {t('requestForm.softwareName')}
+            </Label>
+            <Input
+              id={fieldId('softwareName')}
+              {...form.register('softwareName')}
+              aria-required="true"
+              aria-invalid={!!errors.softwareName}
+              aria-describedby={errorId('softwareName')}
+            />
+            {error('softwareName')}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor={fieldId('accessLevel')} className="font-semibold">
+              {t('requestForm.accessLevel')}
+            </Label>
+            <Controller
+              control={form.control}
+              name="accessLevel"
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger
+                    id={fieldId('accessLevel')}
+                    ref={field.ref}
+                    onBlur={field.onBlur}
+                    aria-required="true"
+                    aria-invalid={!!errors.accessLevel}
+                    aria-describedby={errorId('accessLevel')}
+                    className="w-full"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ACCESS_LEVELS.map((level) => (
+                      <SelectItem key={level} value={level}>
+                        {t(`accessLevels.${level}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {error('accessLevel')}
+          </div>
+          {accessLevel === 'other' && (
+            <div className="space-y-2">
+              <Label
+                htmlFor={fieldId('accessDetail')}
+                className="font-semibold"
+              >
+                {t('requestForm.accessDetail')}
+              </Label>
+              <Input
+                id={fieldId('accessDetail')}
+                {...form.register('accessDetail')}
+                aria-required="true"
+                aria-invalid={!!errors.accessDetail}
+                aria-describedby={errorId('accessDetail')}
+              />
+              {error('accessDetail')}
+            </div>
+          )}
+          <div className="space-y-2">
+            <Label htmlFor={fieldId('justification')} className="font-semibold">
+              {t('requestForm.justification')}
+            </Label>
+            <Textarea
+              id={fieldId('justification')}
+              {...form.register('justification')}
+              aria-required="true"
+              aria-invalid={!!errors.justification}
+              aria-describedby={errorId('justification')}
+            />
+            <p className="text-sm text-muted-foreground">
+              {t('requestForm.justificationHint')}
+            </p>
+            {error('justification')}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor={fieldId('neededBy')} className="font-semibold">
+              {t('requestForm.neededBy')}
+            </Label>
+            <Input
+              id={fieldId('neededBy')}
+              type="date"
+              min={today}
+              {...form.register('neededBy')}
+              aria-invalid={!!errors.neededBy}
+              aria-describedby={errorId('neededBy')}
+            />
+            {error('neededBy')}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor={fieldId('comments')} className="font-semibold">
+              {t('requestForm.comments')}
+            </Label>
+            <Textarea
+              id={fieldId('comments')}
+              {...form.register('comments')}
+              aria-invalid={!!errors.comments}
+              aria-describedby={errorId('comments')}
+            />
+            {error('comments')}
+          </div>
+          {formError && (
+            <p role="alert" className="text-sm text-destructive">
+              {t(errorMessageKey(formError))}
+            </p>
+          )}
+        </CardContent>
+        <CardFooter>
+          <Button
+            type="submit"
+            disabled={busy || create.isSuccess}
+            aria-busy={busy}
+          >
+            {t(busy ? 'requestForm.submitting' : 'requestForm.submit')}
+          </Button>
+        </CardFooter>
+      </form>
+    </Card>
   );
 }

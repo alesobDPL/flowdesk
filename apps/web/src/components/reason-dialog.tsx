@@ -80,7 +80,9 @@ export function ReasonDialog({
         }}
       >
         <div className="space-y-2">
-          <Label htmlFor={id}>{t(`actionDialog.labels.${mode}`)}</Label>
+          <Label htmlFor={id} className="font-semibold">
+            {t(`actionDialog.labels.${mode}`)}
+          </Label>
           <Textarea
             id={id}
             value={text}

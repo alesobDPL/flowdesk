@@ -96,6 +96,17 @@ async function fill(justification = 'Necesito acceso al equipo.') {
   );
 }
 
+it('renders inside a card with the actions in the footer', () => {
+  show();
+  const submit = screen.getByRole('button', { name: es.requestForm.submit });
+  const form = submit.closest('form');
+  const card = form?.closest('[data-slot="card"]');
+  expect(card).not.toBeNull();
+  expect(card?.classList.contains('max-w-[640px]')).toBe(true);
+  expect(submit.closest('[data-slot="card-footer"]')).not.toBeNull();
+  expect(form?.querySelector('[data-slot="card-content"]')).not.toBeNull();
+});
+
 it('shows accessDetail only for other', async () => {
   show();
   expect(screen.queryByRole('textbox', { name: /Detalle del rol/ })).toBeNull();

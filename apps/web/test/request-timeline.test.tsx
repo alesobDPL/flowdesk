@@ -8,6 +8,29 @@ import { request } from './helpers/request';
 
 afterEach(cleanup);
 
+it('keeps a list named by timeline.title with one heading per event and decorative rail', () => {
+  render(
+    <NextIntlClientProvider locale="es" messages={es}>
+      <RequestTimeline events={request.events} />
+    </NextIntlClientProvider>,
+  );
+  const list = screen.getByRole('list', { name: es.timeline.title });
+  const items = within(list).getAllByRole('listitem');
+  expect(items).toHaveLength(request.events.length);
+  expect(
+    items.map((item) => {
+      const headings = within(item).getAllByRole('heading');
+      expect(headings).toHaveLength(1);
+      expect(headings[0]!.tagName).toBe('H3');
+      expect(item.querySelector('[aria-hidden="true"]')).not.toBeNull();
+      return headings[0]!.textContent;
+    }),
+  ).toEqual([es.events.created, es.events.approved]);
+  expect(
+    list.parentElement?.querySelector(':scope > [aria-hidden="true"]'),
+  ).not.toBeNull();
+});
+
 it.each([
   {
     locale: 'es',
