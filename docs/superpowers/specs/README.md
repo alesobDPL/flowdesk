@@ -7,3 +7,4 @@ Cada diseño se guarda como `YYYY-MM-DD-<tema>-design.md`. Cubre la intención, 
 | Diseño | Fecha | Estado |
 | --- | --- | --- |
 | [MVP de FlowDesk](2026-11-22-flowdesk-mvp-design.md) | 2026-11-22 | Aprobado el 2026-11-22 |
+| [Rediseño visual](2026-11-23-flowdesk-visual-redesign-design.md) | 2026-11-23 | Aprobado el 2026-11-23 |
