@@ -1,6 +1,6 @@
 # FlowDesk
 
-[English](README.md) · **Demo: próximamente**
+[English](README.md) · **[Demo en vivo](https://flowdesk.alejandrosobarzo.cl/es)**
 
 FlowDesk es una demo de portafolio de un flujo de solicitudes de acceso a
 software, construida con Next.js, Fastify y PostgreSQL. Usa una empresa ficticia y

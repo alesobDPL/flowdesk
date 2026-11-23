@@ -1,6 +1,6 @@
 # FlowDesk
 
-[Español](README.es.md) · **Demo: coming soon**
+[Español](README.es.md) · **[Live demo](https://flowdesk.alejandrosobarzo.cl)**
 
 FlowDesk is a portfolio demo of a software access request workflow, built with
 Next.js, Fastify and PostgreSQL. It uses a fictional company and sample data.
