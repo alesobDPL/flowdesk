@@ -263,3 +263,4 @@ Lo siguiente queda fuera de este plan. Cada paso necesita la autorización expl�
 ## Registro de aprobación
 
 - **2026-11-23: el propietario aprueba este plan** («Apruebo, lanza E8»). Autoriza delegar los encargos E8 a E12 a Codex, en serie, cada uno en su rama y worktree. Cada encargo necesita su aceptación antes de fusionarse. No autoriza hacer push, desplegar ni publicar.
+- **2026-11-23: el propietario acepta E8** («Acepto, fusiona»). Fusión *fast-forward* de `feat/e8-visual-system` (`32c28dc`) en `main`. Verificado: Vitest 420/420 y e2e 14/14.
