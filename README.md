@@ -221,4 +221,4 @@ commands. Contribution and process rules are in [AGENTS.md](AGENTS.md) and
 
 ## License
 
-**Pending owner decision.** No license has been selected yet.
+Released under the [MIT License](LICENSE).

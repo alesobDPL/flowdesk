@@ -228,4 +228,4 @@ y los comandos. Las reglas de contribución y proceso están en
 
 ## Licencia
 
-**Pendiente de decisión del propietario.** Todavía no se ha elegido una licencia.
+Publicado bajo la [licencia MIT](LICENSE).
