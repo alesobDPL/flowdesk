@@ -930,3 +930,4 @@ Esta tarea no se delega a Codex sin esa autorización. Su ejecución se planific
 - **2026-11-22: el propietario acepta E4 (tareas 8 y 9) y autoriza fusionar `feat/e4-api` en `main`.** Alcance: solo esa fusión local. No autoriza push.
 - **2026-11-22: el propietario acepta E5 (tareas 10 a 13) y autoriza fusionar `feat/e5-web` en `main`.** Alcance: solo esa fusión local. No autoriza push.
 - **2026-11-22: el propietario acepta E6 (tareas 14 y 15) y autoriza fusionar `feat/e6-e2e` en `main`.** Alcance: solo esa fusión local. No autoriza push. La licencia sigue pendiente de decisión del propietario.
+- **2026-11-23: el propietario acepta E7 (tarea 16) y autoriza fusionar `feat/e7-deploy` en `main`.** Alcance: solo esa fusión local. No autoriza push, publicar imágenes ni actuar en el VPS. Con E7 quedan completas las tareas 1 a 16; para cerrar el hito 1 falta el CI en verde en GitHub, que requiere push con autorización del propietario. La tarea 17 sigue bloqueada.
