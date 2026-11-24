@@ -5,10 +5,12 @@ Punto de entrada de Claude Code en FlowDesk. Las reglas comunes están en [AGENT
 ## Al iniciar una sesión
 
 1. Usar Superpowers, comenzando por `using-superpowers`.
-2. Leer [AGENTS.md](AGENTS.md), la [documentación](docs/README.md), el [diseño](docs/superpowers/specs/2026-11-22-flowdesk-mvp-design.md) y el [plan](docs/superpowers/plans/2026-11-22-flowdesk-mvp.md) para saber en qué fase está el trabajo.
+2. Usar la skill `proyecto-ordenado` en modo **retomar**: leer solo el bloque de estado de [docs/00-inicio.md](docs/00-inicio.md) y la nota que enlaza en `docs/privado/bitacora/`. Abrir la [documentación técnica](docs/README.md), specs o plans solo si el siguiente paso lo exige.
 3. Distinguir siempre **Aprobado**, **Propuesto** y **Pendiente**. Una recomendación anterior no es una decisión aprobada.
 
-El historial del descubrimiento, los encargos y los documentos de infraestructura se guardan en un archivo privado local fuera del repositorio. No se publican.
+El descubrimiento, los encargos, la infraestructura del VPS y la bitácora están en `docs/privado/`: ignorado por este repo y versionado en su propio repo privado. No se publican. Al terminar una sesión, usar `proyecto-ordenado` en modo **cerrar**.
+
+Solo Claude Code edita `docs/` (estado, bitácora, ADR, arquitectura, specs y plans). Cada decisión de arquitectura aprobada genera un ADR en `docs/decisiones/`.
 
 ## Fases y aprobaciones
 
@@ -22,7 +24,8 @@ Registrar cada aprobación con su fecha y alcance. No deducir una aprobación de
 ## Delegación a Codex
 
 - Delegar solo tareas del plan aprobado, mediante el plugin oficial de Codex para Claude Code (`/codex:rescue`).
-- Cada encargo se ejecuta en un git worktree y una rama propios, nunca sobre `main`.
+- Cada encargo se guarda en `docs/privado/encargos/` desde su plantilla y se envía **completo** a Codex: SHA base, archivos permitidos, rutas exactas de spec y plan, pasos con sus tests y verificaciones. Codex no ve `docs/privado/` ni usa Superpowers: la disciplina viaja en el encargo y en [AGENTS.md](AGENTS.md).
+- Cada encargo se ejecuta en un git worktree y una rama propios, nunca sobre `main`. Varios encargos en paralelo solo si el plan los marca sin archivos ni dependencias compartidos.
 - Claude Code puede pedir hasta tres rondas de corrección por encargo dentro del alcance aprobado. Ante una decisión arquitectónica nueva, un cambio de alcance, un riesgo importante o un bloqueo, detenerse y consultar al propietario.
 - Codex trabaja con sandbox limitado al espacio de trabajo y aprobación bajo petición, sin modos de permisos irrestrictos.
 - No activar bucles automáticos de revisión entre agentes sin acuerdo del propietario.

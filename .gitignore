@@ -30,3 +30,6 @@ apps/web/demo-video/
 
 # Generado por Next.js en cada dev/build (la documentación de Next recomienda no versionarlo).
 apps/web/next-env.d.ts
+
+# proyecto-ordenado
+/docs/privado/
