@@ -2,15 +2,19 @@
 
 [Documentación](../README.md) · [Plan aprobado, Task 16](../superpowers/plans/2026-11-22-flowdesk-mvp.md#task-16-imágenes-compose-de-producción-y-guía-de-despliegue)
 
-Esta guía prepara E7 y la aceptación local del hito 1. **Task 17 y cualquier
-actuación en el VPS siguen bloqueadas.** Los comandos de servidor de las secciones
-posteriores solo se ejecutan después de una autorización específica.
+Esta guía se preparó en E7 para la aceptación local del hito 1. **La demo está
+desplegada desde el 2026-11-23** (Task 17, hito 2) en
+<https://flowdesk.alejandrosobarzo.cl>, con HTTPS de Let's Encrypt; el registro
+está en el [plan del MVP](../superpowers/plans/2026-11-22-flowdesk-mvp.md). Los
+comandos de servidor de las secciones posteriores (actualizar, volver atrás o
+cualquier otra actuación en el VPS) siguen exigiendo una autorización específica
+del propietario.
 
 ## Requisitos
 
 - Docker con Compose v2. Para la prueba local, el motor debe estar iniciado y la
   subred `172.30.0.0/24` disponible.
-- En el futuro servidor: Caddy instalado en el host, dominio que apunte al servidor
+- En el servidor: Caddy instalado en el host, dominio que apunte al servidor
   y puertos 80/443 abiertos. La configuración de seguridad del servidor queda
   fuera de esta guía.
 - Para el recorrido local: Node.js 26, pnpm 12.21.0, dependencias del workspace y

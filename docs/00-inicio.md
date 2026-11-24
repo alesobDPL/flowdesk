@@ -8,7 +8,7 @@ Flujo de solicitudes de acceso a software: el empleado solicita, el aprobador de
 - **Último avance:** rediseño visual (E8–E12) aceptado, fusionado y desplegado con dominio y HTTPS. Documentación adoptada a la estructura `proyecto-ordenado`.
 - **Encargos abiertos:** ninguno.
 - **Bloqueos:** ninguno.
-- **Siguiente paso:** ninguno planificado. Mantenimiento menor: actualizar `docs/README.md` y la guía de despliegue, que aún dicen que el VPS está bloqueado. Una nueva iniciativa empezaría con brainstorming.
+- **Siguiente paso:** ninguno planificado. Solo mantenimiento (Dependabot y CI) o una nueva iniciativa, que empezaría con brainstorming.
 - **Última bitácora:** `privado/bitacora/2026-11-23-2256-adopcion-proyecto-ordenado.md` (privada).
 
 <!-- Fases: descubrimiento | diseño | plan | implementación | revisión | despliegue | terminado.
